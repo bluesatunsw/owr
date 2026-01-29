@@ -1,0 +1,38 @@
+[package]
+authors = ["Aavin Fernando <aavin.fernando@gmail.com>"]
+edition = "2024"
+readme = "README.md"
+name = "cpm_firmware"
+version = "0.0.1"
+
+# allows use of `cargo fix`
+[[bin]]
+name = "cpm_firmware"
+test = false
+bench = false
+
+[dependencies]
+cortex-m-rt = "0.7.5"
+panic-semihosting = "0.6.0" # NOTE: change to different panic once not in development environment
+cortex-m-semihosting = "0.5.0"
+nb = "1.1.0"
+heapless = "0.9.1"
+cfg-if = "1.0.4"
+embedded-io = "0.6.1"
+libm = "0.2.15"
+stm32g4 = { version = "0.16.0", features = ["rt"]}
+stm32g4xx-hal = { git = "https://github.com/bluesatunsw/stm32g4xx-hal", branch = "qspi", version = "0.0.2", features = ["stm32g474", "rt", "can"] }
+embedded_common = { path="../embedded_common"}
+embedded-alloc = "0.7.0"
+fugit = "0.3.9"
+canadensis_core = "0.5.1"
+
+
+[dependencies.cortex-m]
+version = "0.7.7"
+features = ["critical-section-single-core"]
+
+[profile.release]
+codegen-units = 1 # better optimizations
+debug = true # symbols are nice and they don't increase the size on Flash
+lto = true # better optimizations

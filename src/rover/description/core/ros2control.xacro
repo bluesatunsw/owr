@@ -4,7 +4,7 @@
     <xacro:macro name="ros2control_swerve_drive_iface" params="name subject_id">
         <joint name="db_${name}_fork_tyre_joint">
             <command_interface name="velocity">
-                <limits enable="true"/>
+		<limits enable="true"><limits>
                 <param name="subject_id">${subject_id}</param>
             </command_interface>
         </joint>

@@ -3,6 +3,8 @@
 
 #include "hardware_interface/system_interface.hpp"
 
+
+
 namespace cyphal_vesc_driver 
 {
 
@@ -12,7 +14,11 @@ namespace cyphal_vesc_driver
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
+
 class CyphalVescDriver : public hardware_interface::SystemInterface {
+private:
+  std::vector<CommandInterface> commands;
+  std::vector<StateInterface> states;
 public:
   CyphalVescDriver() {}
 
@@ -27,10 +33,6 @@ public:
   hardware_interface::return_type read(const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
   hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::Duration & period) override;
-
-
-
-
 
 };
 

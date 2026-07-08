@@ -42,6 +42,8 @@ RUN curl "https://github.com/lichtblick-suite/lichtblick/releases/latest/downloa
 # Python package manager 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
+# dependency of swerve_drive_controller
+RUN apt-get install ros-jazzy-ros2-control-test-assets 
 
 RUN echo '* soft rtprio 99\n\
 * soft priority 99\n\

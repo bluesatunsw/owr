@@ -5,11 +5,8 @@
 #![no_std]
 #![no_main]
 
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    abort()
-}
-
+use defmt_rtt as _;
+use panic_probe as _;
 use core::intrinsics::abort;
 use core::panic::PanicInfo;
 use cortex_m_rt::entry;
@@ -21,6 +18,7 @@ use stm32g4xx_hal::{
     pwr::{PwrExt, VoltageScale},
     rcc::*,
     opamp::*,
+    adc::{AdcClaim, AdcCommonExt},
 };
 
 const NUM_LEDS: usize = 300;
@@ -82,7 +80,8 @@ fn main() -> ! {
 
     let leds = [Colour::AMBER; NUM_LEDS];
 
-    //let (opamp2, opamp3, opamp4, _opamp5) = dp.OPAMP.split(&mut rcc);
+    let (_, opamp2, opamp3, opamp4, opamp5, _) = dp.OPAMP.split(&mut rcc);
+    // opamp3.pga_external_filter(non_inverting, filter::F, Gain::Gain2);
 
     loop {
         lci.display(&[Colour::AMBER; 3]);
@@ -90,5 +89,6 @@ fn main() -> ! {
         lc1.display(&leds);
         lc2.display(&leds);
         lc3.display(&leds);
+        defmt::println!("Hi from loop");
     }
 }

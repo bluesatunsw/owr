@@ -7,3 +7,7 @@ edition = "2021"
 
 [dependencies]
 canadensis = "0.6.1"
+canadensis_can = "0.6.0"
+canadensis_linux = "0.6.0"
+heapless = "0.9.3"
+socketcan = "3.6.2"

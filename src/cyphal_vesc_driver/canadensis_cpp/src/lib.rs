@@ -1,4 +1,5 @@
-use socketcan::{CanFdSocket};
+use canadensis::Node;
+use socketcan::{CanFdSocket, Socket};
 
 use canadensis::requester::TransferIdFixedMap;
 use canadensis::core::{SubjectId, Priority};
@@ -7,7 +8,7 @@ use canadensis::node::{BasicNode, CoreNode};
 use canadensis::node::data_types::{GetInfoResponse, Version};
 use canadensis_can::queue::{ArrayQueue, SingleQueueDriver};
 use canadensis_can::{CanTransmitter, Mtu, CanNodeId, CanReceiver, CanTransport};
-use canadensis_data_types::reg::udral::service::actuator::comon::sp::scalar_0_1::Scalar as Scalar;
+use canadensis_data_types::reg::udral::service::actuator::common::sp::scalar_0_1::Scalar as Scalar;
 
 use std::thread;
 use std::time::Duration;
@@ -15,12 +16,10 @@ use std::vec::Vec;
 
 use canadensis_linux::{LinuxCan, SystemClock};
 
-struct Members<N> {
-   data: Box<Data<N>>,
-}
+type CyphalNode = BasicNode<CoreNode<SystemClock, CanTransmitter<SystemClock, SingleQueueDriver<SystemClock, ArrayQueue<1210>, LinuxCan<CanFdSocket>>>, CanReceiver<SystemClock, SingleQueueDriver<SystemClock, ArrayQueue<1210>, LinuxCan<CanFdSocket>>>, TransferIdFixedMap<CanTransport, 16>, SingleQueueDriver<SystemClock, ArrayQueue<1210>, LinuxCan<CanFdSocket>>, 16, 16>>;
 
-struct Data <N> {
-    cyphal_node: BasicNode<N>
+struct Members {
+   data: Box<CyphalNode>
 }
 
 const VESC_SPEED_SUB: [u16; 4] = [3050, 3060, 3070, 3080];
@@ -42,14 +41,14 @@ const REQUESTERS: usize = 16;
 impl Members {
     pub fn on_init(can_interface: String, node_id: u8) -> Self {
         // start telling to go 0 rads
-        let can = CanFdSocket::open(&can_interface);
-        can.set_read_timeout(Duration::from_millis(100))?;
-        can.set_write_timeout(Duration::from_millis(100))?;
+        let can = CanFdSocket::open(&can_interface).expect("Failed to open CAN interface");
+        can.set_read_timeout(Duration::from_millis(100)).expect("Failed to set read timeout");
+        can.set_write_timeout(Duration::from_millis(100)).expect("Failed to set write timeout");
 
         let linux_can = LinuxCan::new(can);
  
         let transmitter = CanTransmitter::new(Mtu::CanFd64);
-        let node_id = CanNodeId::try_from(node_id);
+        let node_id = CanNodeId::try_from(node_id).unwrap();
         let receiver = CanReceiver::new(node_id);
 
         let cyphal_node_info = GetInfoResponse {
@@ -70,7 +69,7 @@ impl Members {
         let node: CoreNode<
             SystemClock,
             CanTransmitter<SystemClock, FDQueue>,
-            CanReceiver<SystemClock>,
+            CanReceiver<SystemClock, FDQueue>,
             TransferIdFixedMap<CanTransport, TRANSFER_IDS>,
             FDQueue,
             PUBLISHERS,
@@ -82,20 +81,20 @@ impl Members {
             receiver,
             queue_driver,
         );
-        let mut node = BasicNode::new(node, cyphal_node_info);
+        let mut node = BasicNode::new(node, cyphal_node_info).unwrap();
    
         for subject in VESC_SPEED_SUB {
             node.start_publishing(
-                SubjectId::from_truncating(),
+                SubjectId::from_truncating(subject),
                 MicrosecondDuration32::millis(1_000),
                 Priority::Nominal
             ).unwrap();
         }
 
         for _ in 0..3 {
-            for i : VESC_SPEED_SUB {
+            for i in VESC_SPEED_SUB {
                 let besc = Scalar {
-                    value: 0
+                    value: half::f16::from_f32(0.0)
                 };
                 node.publish(i.try_into().unwrap(), &besc).unwrap();
             }
@@ -104,7 +103,7 @@ impl Members {
 
         node.flush().unwrap();
         
-        Members { data: Data { cyphal_node } }
+        Members { data: Box::new(node) }
     }    
 
     pub fn on_deactivate() -> {

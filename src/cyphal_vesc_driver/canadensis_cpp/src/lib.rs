@@ -1,14 +1,14 @@
 use canadensis::Node;
 use socketcan::{CanFdSocket, Socket};
 
-use canadensis::requester::TransferIdFixedMap;
-use canadensis::core::{SubjectId, Priority};
 use canadensis::core::time::MicrosecondDuration32;
-use canadensis::node::{BasicNode, CoreNode};
+use canadensis::core::{Priority, SubjectId};
 use canadensis::node::data_types::{GetInfoResponse, Version};
+use canadensis::node::{BasicNode, CoreNode};
+use canadensis::requester::TransferIdFixedMap;
 use canadensis_can::queue::{ArrayQueue, SingleQueueDriver};
-use canadensis_can::{CanTransmitter, Mtu, CanNodeId, CanReceiver, CanTransport};
-use canadensis_data_types::reg::udral::service::actuator::common::sp::scalar_0_1::Scalar as Scalar;
+use canadensis_can::{CanNodeId, CanReceiver, CanTransmitter, CanTransport, Mtu};
+use canadensis_data_types::reg::udral::service::actuator::common::sp::scalar_0_1::Scalar;
 
 use std::thread;
 use std::time::Duration;
@@ -16,13 +16,7 @@ use std::vec::Vec;
 
 use canadensis_linux::{LinuxCan, SystemClock};
 
-type CyphalNode = BasicNode<CoreNode<SystemClock, CanTransmitter<SystemClock, SingleQueueDriver<SystemClock, ArrayQueue<1210>, LinuxCan<CanFdSocket>>>, CanReceiver<SystemClock, SingleQueueDriver<SystemClock, ArrayQueue<1210>, LinuxCan<CanFdSocket>>>, TransferIdFixedMap<CanTransport, 16>, SingleQueueDriver<SystemClock, ArrayQueue<1210>, LinuxCan<CanFdSocket>>, 16, 16>>;
-
-struct Members {
-   data: Box<CyphalNode>
-}
-
-const VESC_SPEED_SUB: [u16; 4] = [3050, 3060, 3070, 3080];
+const QUEUE_CAPACITY: usize = 1210;
 
 // Transfer id's are assigned to frames cyclically
 // This ensure that large multi-frame messages are able
@@ -38,15 +32,37 @@ const PUBLISHERS: usize = 16;
 // In theory we don't have any of these
 const REQUESTERS: usize = 16;
 
-impl Members {
+type FDQueue = SingleQueueDriver<SystemClock, ArrayQueue<QUEUE_CAPACITY>, LinuxCan<CanFdSocket>>;
+
+type BescCoreNode = CoreNode<
+    SystemClock,
+    CanTransmitter<SystemClock, FDQueue>,
+    CanReceiver<SystemClock, FDQueue>,
+    TransferIdFixedMap<CanTransport, TRANSFER_IDS>,
+    FDQueue,
+    PUBLISHERS,
+    REQUESTERS,
+>;
+type BescCyphalNode = BasicNode<BescCoreNode>;
+
+struct Opaque {
+    cyphal_node: Box<BescCyphalNode>,
+    setpoints: [f32; 4],
+}
+
+const VESC_SPEED_SUB: [u16; 4] = [3050, 3060, 3070, 3080];
+
+impl Opaque {
     pub fn on_init(can_interface: String, node_id: u8) -> Self {
         // start telling to go 0 rads
         let can = CanFdSocket::open(&can_interface).expect("Failed to open CAN interface");
-        can.set_read_timeout(Duration::from_millis(100)).expect("Failed to set read timeout");
-        can.set_write_timeout(Duration::from_millis(100)).expect("Failed to set write timeout");
+        can.set_read_timeout(Duration::from_millis(100))
+            .expect("Failed to set read timeout");
+        can.set_write_timeout(Duration::from_millis(100))
+            .expect("Failed to set write timeout");
 
         let linux_can = LinuxCan::new(can);
- 
+
         let transmitter = CanTransmitter::new(Mtu::CanFd64);
         let node_id = CanNodeId::try_from(node_id).unwrap();
         let receiver = CanReceiver::new(node_id);
@@ -62,19 +78,9 @@ impl Members {
             certificate_of_authenticity: Default::default(),
         };
 
-        const QUEUE_CAPACITY: usize = 1210;
-        type FDQueue = SingleQueueDriver<SystemClock, ArrayQueue<QUEUE_CAPACITY>, LinuxCan<CanFdSocket>>;
         let queue_driver: FDQueue = SingleQueueDriver::new(ArrayQueue::new(), linux_can);
 
-        let node: CoreNode<
-            SystemClock,
-            CanTransmitter<SystemClock, FDQueue>,
-            CanReceiver<SystemClock, FDQueue>,
-            TransferIdFixedMap<CanTransport, TRANSFER_IDS>,
-            FDQueue,
-            PUBLISHERS,
-            REQUESTERS,
-        > = CoreNode::new(
+        let node: BescCoreNode = CoreNode::new(
             SystemClock::new(),
             node_id,
             transmitter,
@@ -82,19 +88,20 @@ impl Members {
             queue_driver,
         );
         let mut node = BasicNode::new(node, cyphal_node_info).unwrap();
-   
+
         for subject in VESC_SPEED_SUB {
             node.start_publishing(
                 SubjectId::from_truncating(subject),
                 MicrosecondDuration32::millis(1_000),
-                Priority::Nominal
-            ).unwrap();
+                Priority::Nominal,
+            )
+            .unwrap();
         }
 
         for _ in 0..3 {
             for i in VESC_SPEED_SUB {
                 let besc = Scalar {
-                    value: half::f16::from_f32(0.0)
+                    value: half::f16::from_f32(0.0),
                 };
                 node.publish(i.try_into().unwrap(), &besc).unwrap();
             }
@@ -102,26 +109,49 @@ impl Members {
         }
 
         node.flush().unwrap();
-        
-        Members { data: Box::new(node) }
-    }    
 
-    pub fn on_deactivate() -> {
-        // should start going to 0 rads again 
-        // 20 ms for periodic  
+        Opaque {
+            cyphal_node: Box::new(node),
+            setpoints: [0.0, 0.0, 0.0, 0.0],
+        }
     }
 
-    pub fn read() ->  {
-       // perioidic 
+    pub fn on_deactivate(&mut self) {
+        // should start going to 0 rads again
+        // 20 ms for periodic
+        for _ in 0..3 {
+            for i in VESC_SPEED_SUB {
+                let besc = Scalar {
+                    value: half::f16::from_f32(0.0),
+                };
+                self.cyphal_node
+                    .publish(i.try_into().unwrap(), &besc)
+                    .unwrap();
+            }
+            self.cyphal_node.flush().unwrap();
+        }
+    }
+
+    pub fn read(&self, besc_id: usize) -> f32 {
+        // perioidic
         // called at peripheral freq
-        // done for us so dont need to worry just broadcast 
+        // done for us so dont need to worry just broadcast
+
+        self.setpoints[besc_id]
     }
 
-    pub fn write(&mut self, node_id: u8, message: u32) -> {
+    pub fn write(&mut self, besc_id: usize, message: f32) {
         // self.data = node
 
-        // messages from cpp 
-        // store set points in local variables 
+        // messages from cpp
+        // store set points in local variables
 
-    } 
+        let besc = Scalar {
+            value: half::f16::from_f32(message),
+        };
+        self.setpoints[besc_id] = message;
+        self.cyphal_node
+            .publish(VESC_SPEED_SUB[besc_id].try_into().unwrap(), &besc)
+            .unwrap();
+    }
 }

@@ -1,0 +1,19 @@
+[package]
+name = "canadensis_cpp"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+canadensis = "0.6.1"
+canadensis_data_types = "0.6.0"
+canadensis_linux = "0.6.0"
+half = "2.7.1"
+heapless = "0.9.3"
+rand = "0.10.2"
+socketcan = "3.6.2"
+
+[dependencies.canadensis_can]
+version = "0.6.0"
+features = ["can-fd"]

@@ -33,6 +33,9 @@ RUN apt-get install -y ros-jazzy-ros-gz
 RUN apt-get install -y ros-jazzy-gz-ros2-control ros-jazzy-joint-state-broadcaster \
     ros-jazzy-diff-drive-controller
 
+# Rust
+RUN apt-get install -y cargo
+
 # Lichtblick data viewer
 RUN apt-get install -y xdg-utils ros-jazzy-foxglove-bridge
 RUN curl "https://github.com/lichtblick-suite/lichtblick/releases/latest/download/$(curl https://github.com/lichtblick-suite/lichtblick/releases/latest/download/latest-linux.yml -qL 2>/dev/null| grep url | cut -d ':' -f 2 | tr -d ' ')" -Lo lichtblick.deb \ 

@@ -1,0 +1,49 @@
+[package]
+authors = ["Jonah Hopkin <jonahhopkin@gmail.com>", "Sean Haines <seanhaines2007@gmail.com>"]
+edition = "2018"
+readme = "README.md"
+name = "main_power_hub_firmware"
+version = "0.0.1"
+
+[dependencies]
+cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7"
+defmt = "1.1"
+defmt-rtt = "1.0"
+embedded-alloc = "0.7.0"
+panic-probe = { version = "1.0", features = ["defmt"] }
+canadensis = "0.5.0"
+canadensis_can = { version = "0.5.1", features = ["can-fd"] }
+heapless = "0.9.3"
+canadensis_data_types = "0.5.0"
+
+[dependencies.stm32g4xx-hal]
+version = "0.0.3"
+git = "https://github.com/bluesatunsw/stm32g4xx-hal"
+features = ["stm32g474", "rt", "can"]
+
+[dependencies.embedded-common]
+version = "0.0.1"
+git = "https://github.com/bluesatunsw/embedded_common/"
+
+# cargo build/run
+[profile.dev]
+# default is opt-level = '0', but that makes very
+# verbose machine code
+opt-level = 's'
+# trade compile speed for slightly better optimisations
+codegen-units = 1
+
+# cargo build/run --release
+[profile.release]
+# default is opt-level = '3', but that makes quite
+# verbose machine code
+opt-level = 'z'
+# trade compile speed for slightly better optimisations
+codegen-units = 1
+# Use Link Time Optimisations to further inline things across
+# crates
+lto = 'fat'
+# Leave the debug symbols in (default is no debug info)
+# (this doesn't increase size on flash)
+debug = 2

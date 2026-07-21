@@ -15,7 +15,7 @@ use embedded_common::{
 use heapless::Vec;
 
 use stm32g4xx_hal::{
-    adc::{self, AdcClaim, AdcCommonExt}, gpio::{self, GpioExt}, pac::{self, fdcan::TEST}, prelude::*, pwr::{PwrExt, VoltageScale}, rcc::*, time::{ExtU32, RateExtU32}
+    adc::{self, AdcClaim, AdcCommonExt}, gpio::{self, GpioExt}, opamp::Gain, pac::{self, fdcan::TEST}, prelude::*, pwr::{PwrExt, VoltageScale}, rcc::*, time::{ExtU32, RateExtU32}
 };
 
 use cortex_m_rt::entry;
@@ -39,9 +39,7 @@ use canadensis_can::{CanNodeId, CanReceiver, CanTransmitter, CanTransport, Mtu};
 
 // NOTE: import the data types you use
 /* use canadensis_data_types::{
-    // Even though we use it for this example, avoid using primitives like these except for
-    // debugging. (See the Cyphal spec.)
-    uavcan::primitive::scalar::natural8_1_0,
+ * ...
 }; */
 
 use canadensis_data_types::uavcan::node::execute_command_1_3::SERVICE as EXECUTE_COMMAND_SERVICE;
@@ -55,24 +53,19 @@ const CYPHAL_CONCURRENT_TRANSFERS: usize = 4;
 const CYPHAL_NUM_TOPICS: usize = 8;
 const CYPHAL_NUM_SERVICES: usize = 8;
 
-// NOTE: these are suggested constants but feel free to adjust
 const HEARTBEAT_PERIOD_US: u32 = 1_000_000;
-const TELEM_PERIOD_US: u32 = 50_000;
+const TELEM_PERIOD_US: u32 = 500_000;
 const TID_TIMEOUT_US: u32 = 100_000;
 const LED_UPDATE_US: u32 = 10_000;
 
 // Cyphal IDs
-// NOTE: remove these ones and add the ones you use
+// TODO
 /* const LED_TELEM_SUBJECT: SubjectId = SubjectId::from_truncating(3000);
 const LED_UPDATE_SUBJECT: SubjectId = SubjectId::from_truncating(3001); */
 
 // ARGB LED constants 
-// NOTE: uncomment if you want to use these
 const RED: Colour = Colour { r: 255, g: 0, b: 0 };
-// const BLUE: Colour = Colour { r: 0, g: 0, b: 255 };
-// const MAGENTA: Colour = Colour { r: 255, g: 0, b: 255 };
-// const CYAN: Colour = Colour { r: 0, g: 255, b: 255 };
-const YELLOW: Colour = Colour { r: 255, g: 255, b: 0 };
+const DIM_YELLOW: Colour = Colour { r: 96, g: 48, b: 0 };
 const GREEN: Colour = Colour { r: 0, g: 255, b: 0 };
 const BLANK: Colour = Colour { r: 0, g: 0, b: 0 };
 const AMBER: Colour = Colour::AMBER;
@@ -112,7 +105,7 @@ fn main() -> ! {
                 // Run PLLR and PLLQ at 168 MHz (the maximum)
                 r: Some(PllRDiv::DIV_2), // used for SYSCLK
                 q: Some(PllQDiv::DIV_2), // used for FDCAN
-                p: None,
+                p: Some(PllPDiv::DIV_20), // 16.8 MHz before prescaling
             })
             .fdcan_src(FdCanClockSource::PLLQ),
             pwr
@@ -124,7 +117,22 @@ fn main() -> ! {
     let gpioa = dp.GPIOA.split(&mut rcc);
     let gpiob = dp.GPIOB.split(&mut rcc);
     let gpioc = dp.GPIOC.split(&mut rcc);
-    // let gpiod = dp.GPIOD.split(&mut rcc);
+
+    // SAFETY: This is for the opamps. The HAL won't let us both give the
+    // sense pin to the opamp and then use it to do ADC sampling later.
+    // TODO: fix HAL to let us do this safely
+    let (sense0, sense1, sense2, sense3) = unsafe {
+        let stolen_gpioa = pac::GPIOA::steal().split(&mut rcc);
+        let stolen_gpiob = pac::GPIOB::steal().split(&mut rcc);
+        (
+            stolen_gpioa.pa2.into_analog(),
+            stolen_gpioa.pa6.into_analog(),
+            stolen_gpiob.pb1.into_analog(),
+            stolen_gpiob.pb12.into_analog()
+        )
+    };
+
+    let mut delay = cp.SYST.delay(&rcc.clocks);
 
     defmt::debug!("Setting up LED driver...");
     let mut argb = argb::Controller::new(
@@ -133,8 +141,11 @@ fn main() -> ! {
         DEFAULT_BRIGHTNESS,
         &mut rcc,
     );
+    // just to prevent invalid colours on startup
+    delay.delay(1.millis());
     // there are six (6) LEDs on this board
     argb.display(&[AMBER; 6]);
+    delay.delay(1.millis());
 
     // This doesn't get used later
     defmt::debug!("Setting up 100 kHz gate driver clock...");
@@ -143,17 +154,12 @@ fn main() -> ! {
     let _ = pwm.set_duty_cycle_percent(5);
     pwm.enable();
 
-    // Sense setup
-    // This initialises all of the ADCs and then sets all the pins to: into_analog()
-    // This lets you poll it directly from the pins so no need to mess around with ADC in main
-    // We need the SYSTICK delay to set up the ADCs...
-    let mut delay = cp.SYST.delay(&rcc.clocks);
-
+    // ADC setup
     defmt::debug!("Configuring ADC12...");
-    let mut adc12_common = dp.ADC12_COMMON
+    let adc12_common = dp.ADC12_COMMON
         .claim(adc::config::ClockMode::AdcKerCk {
             prescaler: (adc::config::Prescaler::Div_4),
-            src: (adc::config::ClockSource::SystemClock) // NOTE: setting to PLLP doesn't work?????
+            src: (adc::config::ClockSource::PllP)
         }, 
         &mut rcc
     );
@@ -166,53 +172,49 @@ fn main() -> ! {
     let adc2 = adc12_common
         .claim_and_configure(dp.ADC2, adc::config::AdcConfig::default(), &mut delay);
 
-    defmt::debug!("Configuring ADC345...");
-    let adc345_common = dp.ADC345_COMMON
-        .claim(adc::config::ClockMode::AdcKerCk {    // Same here
-            prescaler: (adc::config::Prescaler::Div_4),
-            src: (adc::config::ClockSource::SystemClock)
-        }, 
-        &mut rcc
-    );
-
-    defmt::debug!("Configuring ADC3...");
-    let adc3 = adc345_common
-        .claim_and_configure(dp.ADC3, adc::config::AdcConfig::default(), &mut delay);
-
-    defmt::debug!("Configuring ADC4...");
-    let adc4 = adc345_common
-        .claim_and_configure(dp.ADC4, adc::config::AdcConfig::default(), &mut delay);
-
-    // Pin configuration, not needed for now I think after they've been set
     let vsense_pin: gpio::Pin<'B', 14> = gpiob.pb14.into_analog();
-    let ch0_sense_pin = gpioa.pa2.into_analog();
-    let ch1_sense_pin = gpioa.pa6.into_analog();
-    let ch2_sense_pin = gpiob.pb12.into_analog();
-    let ch3_sense_pin = gpiob.pb1.into_analog();
 
-    let adc_controller = controllers::AdcController { 
-        adc1,
-        adc2,
-        adc3,
-        adc4 
-    };
+    // Opamp configuration
+    let (opamp1, opamp2, opamp3, opamp4, ..) = dp.OPAMP.split(&mut rcc);
+    // Note: on r2p0, PA3 is not connected. PC5 used by mistake instead. See errata
+    // ...wait, but this was working before (and actually gave most accurate results??)
+    // TODO: investigate
+    let opamp1 = opamp1
+        //.pga_external_filter(gpioa.pa1.into_analog(), gpioa.pa3.into_analog(), Gain::Gain64)
+        //.enable_output(gpioa.pa2.into_analog());
+        .pga(gpioa.pa1.into_analog(), Gain::Gain64);
+    let opamp2 = opamp2
+        .pga_external_filter(gpioa.pa7.into_analog(), gpioa.pa5.into_analog(), Gain::Gain64)
+        .enable_output(gpioa.pa6.into_analog());
+    let opamp3 = opamp3
+        .pga_external_filter(gpiob.pb0.into_analog(), gpiob.pb2.into_analog(), Gain::Gain64)
+        .enable_output(gpiob.pb1.into_analog());
+    let opamp4 = opamp4
+        .pga_external_filter(gpiob.pb11.into_analog(), gpiob.pb10.into_analog(), Gain::Gain64)
+        .enable_output(gpiob.pb12.into_analog());
 
     defmt::debug!("Initialising power controller...");
-    let power_controller = PowerController::new(
-        // ENABLE PINS -- start them high to inhibit
-        // J8 CH0
+    let mut power_controller = PowerController::new(
+        // TODO: check CH1 and CH3 pins for all of these (only CH0 and CH2 tested)
+        // enable pins -- start them high to inhibit
         gpioc.pc9.into_push_pull_output_in_state(gpio::PinState::High).into(),
-        // J9 CH1
-        gpioc.pc8.into_push_pull_output().into(),
-        // J2 CH2
-        gpioc.pc7.into_push_pull_output().into(),
-        // J4 CH3
-        gpioc.pc6.into_push_pull_output().into(),
-        // SENSE PINS
-        // ch0_sense_pin,
-        // ch1_sense_pin.into(),
-        // ch2_sense_pin.into(),
-        // ch3_sense_pin.into(),
+        gpioc.pc6.into_push_pull_output_in_state(gpio::PinState::High).into(),
+        gpioc.pc8.into_push_pull_output_in_state(gpio::PinState::High).into(),
+        gpioc.pc7.into_push_pull_output_in_state(gpio::PinState::High).into(),
+        // ADCs
+        vsense_pin,
+        adc1,
+        adc2,
+        // opamps
+        opamp1,
+        opamp2,
+        opamp3,
+        opamp4,
+        // sense pins
+        sense0,
+        sense1,
+        sense2,
+        sense3,
     );
 
     defmt::debug!("Setting up microsecond clock...");
@@ -274,13 +276,16 @@ fn main() -> ! {
 
     // Start the superloop.
     let mut tim_heartbeat = node.clock().now_const();
+    let mut tim_test0 = node.clock().now_const();
+    let mut tim_test1 = node.clock().now_const();
     let mut tim_telem = node.clock().now_const();
     let mut tim_argb = node.clock().now_const();
     let mut tim_1_hz = node.clock().now_const();
     let mut tim_pwr = node.clock().now_const();
   
     let mut comms_state = CommsState { did_tx: false, did_rx: false };
-    let mut subsystem = PowerSubsystem { power_controller };
+
+    let mut blink_phase = true;
 
     defmt::info!("System initialised. Entering superloop...");
     loop {
@@ -291,18 +296,38 @@ fn main() -> ! {
         // signalled over Cyphal/CAN in the heartbeat messages:
         // node.set_health(...); node.set_status_code(...);
 
-        // TEST LOOP
         if node
             .clock()
-            .advance_if_elapsed(&mut tim_heartbeat, 1.secs())
+            .advance_if_elapsed(&mut tim_heartbeat, HEARTBEAT_PERIOD_US.micros())
+        {
+            // node.run_per_second_tasks().unwrap();
+        }
+
+        // TEST LOOPS
+        if node
+            .clock()
+            .advance_if_elapsed(&mut tim_test0, 1.secs())
         {
             const TEST_CHANNEL: controllers::PwrChan = controllers::PwrChan::CH0;
-            if subsystem.power_controller.status(TEST_CHANNEL) == PwrChanState::Enabled {
+            if power_controller.status(TEST_CHANNEL) == PwrChanState::Enabled {
                 defmt::info!("Disabling CH0...");
-                subsystem.power_controller.disable(TEST_CHANNEL);
+                power_controller.disable(TEST_CHANNEL);
             } else {
                 defmt::info!("Enabling CH0...");
-                subsystem.power_controller.enable(TEST_CHANNEL);
+                power_controller.enable(TEST_CHANNEL);
+            }
+        }
+        if node
+            .clock()
+            .advance_if_elapsed(&mut tim_test1, 2.secs())
+        {
+            const TEST_CHANNEL2: controllers::PwrChan = controllers::PwrChan::CH2;
+            if power_controller.status(TEST_CHANNEL2) == PwrChanState::Enabled {
+                defmt::info!("Disabling CH2...");
+                power_controller.disable(TEST_CHANNEL2);
+            } else {
+                defmt::info!("Enabling CH2...");
+                power_controller.enable(TEST_CHANNEL2);
             }
         }
 
@@ -311,34 +336,36 @@ fn main() -> ! {
             .advance_if_elapsed(&mut tim_pwr, controllers::PWR_CTRL_TICK_US.micros())
         {
             defmt::trace!("Doing power subsystem tick...");
-            subsystem.power_controller.tick();
+            power_controller.tick();
         }
 
-        /*if node
+        if node
             .clock()
             .advance_if_elapsed(&mut tim_telem, TELEM_PERIOD_US.micros())
         {
-            node.publish(
+            defmt::trace!("Publishing power telemetry...");
+            /*node.publish(
                 LED_TELEM_SUBJECT,
                 &natural8_1_0::Natural8 {
                     value: subsystem.hue as u8
                 },
             )
-            .unwrap();
+            .unwrap();*/
             comms_state.did_tx = true;
-        }*/
+        }
+
+        // for blinkenlicht
+        // blinking = 1 Hz, 50% duty cycle
+        if node.clock().advance_if_elapsed(&mut tim_1_hz, 500.millis()) { blink_phase = !blink_phase; }
 
         if node
             .clock()
             .advance_if_elapsed(&mut tim_argb, LED_UPDATE_US.micros())
         {
-            let blink_phase = node.clock().advance_if_elapsed(&mut tim_1_hz, 500.millis());
-
-            // blinking = 1 Hz, 50% duty cycle
             fn state_to_colour_blinking(state: PwrChanState) -> (Colour, bool) {
                 match state {
-                    PwrChanState::Enabled => (GREEN, true),
-                    PwrChanState::Disabled => (YELLOW, true),
+                    PwrChanState::Enabled => (GREEN, false),
+                    PwrChanState::Disabled => (DIM_YELLOW, false),
                     PwrChanState::SysInit => (AMBER, false),
                     PwrChanState::Fault => (RED, true),
                 }
@@ -353,19 +380,24 @@ fn main() -> ! {
                 }
             };
 
-            let ch0_col = state_to_colour(subsystem.power_controller.channel_state[0]);
-            let ch1_col = state_to_colour(subsystem.power_controller.channel_state[1]);
-            let ch2_col = state_to_colour(subsystem.power_controller.channel_state[2]);
-            let ch3_col = state_to_colour(subsystem.power_controller.channel_state[3]);
+            let ch0_col = state_to_colour(power_controller.channel_state[0]);
+            let ch1_col = state_to_colour(power_controller.channel_state[1]);
+            let ch2_col = state_to_colour(power_controller.channel_state[2]);
+            let ch3_col = state_to_colour(power_controller.channel_state[3]);
 
-            let can_col = Colour { r: 0, g: if comms_state.did_rx { 255 } else { 0 }, b: if comms_state.did_tx { 255 } else { 0 } };
+            // handle CAN activity indication
+            let can_col = Colour {
+                r: 0,
+                g: if comms_state.did_rx { 255 } else { 0 },
+                b: if comms_state.did_tx { 255 } else { 0 }
+            };
             comms_state.did_rx = false;
             comms_state.did_tx = false;
 
-            let status_col = match subsystem.power_controller.controller_state {
+            let status_col = match power_controller.controller_state {
                 PwrCtrlState::Active => GREEN,
                 PwrCtrlState::SysInit => AMBER,
-                PwrCtrlState::EStopped => YELLOW,
+                PwrCtrlState::EStopped => DIM_YELLOW,
                 PwrCtrlState::Error => RED,
             };
 
@@ -381,13 +413,9 @@ struct CommsState {
     did_rx: bool,
 }
 
-struct PowerSubsystem {
-    power_controller: PowerController
-}
-
 struct CommsHandler<'a> {
     state: &'a mut CommsState,
-    subsystem: &'a mut PowerSubsystem,
+    subsystem: &'a mut PowerController,
 }
 
 impl<T: Transport> TransferHandler<T> for CommsHandler<'_> {

@@ -19,3 +19,5 @@ LED states for different channels:
 - Green: Channel is enabled.
 - Yellow: Channel is disabled.
 - Red, flashing (unused): Power fault on this channel (e.g. current exceeded); disabled.
+
+Treating silkscreen as canonical channel numbering (schematic is inconsistent).

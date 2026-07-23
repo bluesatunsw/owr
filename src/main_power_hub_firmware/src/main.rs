@@ -15,7 +15,7 @@ use embedded_common::{
 use heapless::Vec;
 
 use stm32g4xx_hal::{
-    adc::{self, AdcClaim, AdcCommonExt}, gpio::{self, GpioExt}, opamp::Gain, pac::{self, fdcan::TEST}, prelude::*, pwr::{PwrExt, VoltageScale}, rcc::*, time::{ExtU32, RateExtU32}
+    adc::{self, AdcClaim, AdcCommonExt}, gpio::{self, GpioExt}, i2c::{self, I2cExt}, independent_watchdog, opamp::Gain, pac::{self, fdcan::TEST}, prelude::*, pwr::{PwrExt, VoltageScale}, rcc::*, time::{ExtU32, RateExtU32}, stm32
 };
 
 use cortex_m_rt::entry;
@@ -121,6 +121,8 @@ fn main() -> ! {
     // SAFETY: This is for the opamps. The HAL won't let us both give the
     // sense pin to the opamp and then use it to do ADC sampling later.
     // TODO: fix HAL to let us do this safely
+    // NOTE: split() resets the GPIOA and GPIOB peripherals so the ordering of stealing is
+    // important here...
     let (sense0, sense1, sense2, sense3) = unsafe {
         let stolen_gpioa = pac::GPIOA::steal().split(&mut rcc);
         let stolen_gpiob = pac::GPIOB::steal().split(&mut rcc);
@@ -142,48 +144,45 @@ fn main() -> ! {
         &mut rcc,
     );
     // just to prevent invalid colours on startup
-    delay.delay(1.millis());
+    delay.delay(100.micros());
     // there are six (6) LEDs on this board
     argb.display(&[AMBER; 6]);
-    delay.delay(1.millis());
-
-    // This doesn't get used later
-    defmt::debug!("Setting up 100 kHz gate driver clock...");
-    let clock_pin: gpio::PB7<gpio::AF10> = gpiob.pb7.into_alternate();
-    let mut pwm = dp.TIM3.pwm(clock_pin, 100.kHz(), &mut rcc);
-    let _ = pwm.set_duty_cycle_percent(5);
-    pwm.enable();
 
     // ADC setup
     defmt::debug!("Configuring ADC12...");
-    let adc12_common = dp.ADC12_COMMON
+    let mut adc12_common = dp.ADC12_COMMON
         .claim(adc::config::ClockMode::AdcKerCk {
             prescaler: (adc::config::Prescaler::Div_4),
             src: (adc::config::ClockSource::PllP)
         }, 
         &mut rcc
     );
+    adc12_common.enable_vref();
 
     defmt::debug!("Configuring ADC1...");
-    let adc1 = adc12_common
-        .claim_and_configure(dp.ADC1, adc::config::AdcConfig::default(), &mut delay);
-
+    let mut adc1 = adc12_common
+        .claim(dp.ADC1, &mut delay);
     defmt::debug!("Configuring ADC2...");
-    let adc2 = adc12_common
-        .claim_and_configure(dp.ADC2, adc::config::AdcConfig::default(), &mut delay);
+    let mut adc2 = adc12_common
+        .claim(dp.ADC2, &mut delay);
+
+    adc1.calibrate_all();
+    let adc1 = adc1.enable();
+    adc2.calibrate_all();
+    let adc2 = adc2.enable();
 
     let vsense_pin: gpio::Pin<'B', 14> = gpiob.pb14.into_analog();
 
     // Opamp configuration
     let (opamp1, opamp2, opamp3, opamp4, ..) = dp.OPAMP.split(&mut rcc);
-    // Note: on r2p0, PA3 is not connected. PC5 used by mistake instead. See errata
-    // ...wait, but this was working before (and actually gave most accurate results??)
-    // TODO: investigate
-    let opamp1 = opamp1
+    // NOTE: on r2p0, PA3 is not connected. PC5 used by mistake instead. See errata
+    // PA1: CH0 (silkscreen)
+    // PA7: CH2 (silkscreen)
+    let ch0_opamp = opamp1
         //.pga_external_filter(gpioa.pa1.into_analog(), gpioa.pa3.into_analog(), Gain::Gain64)
         //.enable_output(gpioa.pa2.into_analog());
         .pga(gpioa.pa1.into_analog(), Gain::Gain64);
-    let opamp2 = opamp2
+    let ch2_opamp = opamp2
         .pga_external_filter(gpioa.pa7.into_analog(), gpioa.pa5.into_analog(), Gain::Gain64)
         .enable_output(gpioa.pa6.into_analog());
     let opamp3 = opamp3
@@ -192,6 +191,11 @@ fn main() -> ! {
     let opamp4 = opamp4
         .pga_external_filter(gpiob.pb11.into_analog(), gpiob.pb10.into_analog(), Gain::Gain64)
         .enable_output(gpiob.pb12.into_analog());
+
+    // Configure charge pump clock. Should not be enabled until after the power channels are set up and disabled.
+    let clock_pin: gpio::PB7<gpio::AF10> = gpiob.pb7.into_alternate();
+    let mut charge_pump_pwm = dp.TIM3.pwm(clock_pin, 100.kHz(), &mut rcc);
+    charge_pump_pwm.set_duty_cycle_percent(5);
 
     defmt::debug!("Initialising power controller...");
     let mut power_controller = PowerController::new(
@@ -206,16 +210,58 @@ fn main() -> ! {
         adc1,
         adc2,
         // opamps
-        opamp1,
-        opamp2,
+        ch0_opamp,
         opamp3,
+        ch2_opamp,
         opamp4,
         // sense pins
         sense0,
         sense1,
         sense2,
         sense3,
+        charge_pump_pwm,
     );
+
+    defmt::debug!("Starting 100 kHz charge pump clock...");
+    power_controller.charge_pump_enable();
+
+    defmt::debug!("Setting up I2C EEPROM...");
+    const EEPROM_ADDR: u8 = 0b1010_000;
+    let sda = gpiob.pb9.into_alternate_open_drain();
+    let sda = sda.internal_pull_up(true);
+    let scl = gpioa.pa15.into_alternate_open_drain();
+    let scl = scl.internal_pull_up(true);
+    let mut i2c_bus = dp.I2C1.i2c((sda, scl), 200.kHz(), &mut rcc);
+
+    /*defmt::debug!("Reading 8 bytes from address 0x000...");
+    let address: u16 = 0x000;
+    let mut data: [u8; 8] = [0; 8];
+    match i2c_bus.write_read(EEPROM_ADDR, &[((address & 0x3F00) >> 8) as u8, (address & 0xFF) as u8], &mut data) {
+        Ok(_) => defmt::debug!("Got {}", data),
+        Err(e) => defmt::warn!("Some error reading {:?}", defmt::Debug2Format(&e)),
+    }
+
+    defmt::debug!("Incrementing first four bytes at 0x000...");
+    let address = 0x000;
+    let addr_words = [((address & 0x3F00) >> 8) as u8, (address & 0xFF) as u8];
+    let send_bytes: [u8; 6] = [addr_words[0], addr_words[1], data[0] + 1, data[1] + 1, data[2] + 1, data[3] + 1];
+    match i2c_bus.write(EEPROM_ADDR, &send_bytes) {
+        Ok(_) => defmt::debug!("No error writing data"),
+        Err(e) => defmt::warn!("Error writing: {:?}", defmt::Debug2Format(&e)),
+    };
+
+    // clear write cycle
+    delay.delay(5.millis());
+
+    defmt::debug!("Reading 8 bytes from address 0x000...");
+    let address: u16 = 0x000;
+    for i in 0..8 {
+        data[i] = 0;
+    }
+    match i2c_bus.write_read(EEPROM_ADDR, &[((address & 0x3F00) >> 8) as u8, (address & 0xFF) as u8], &mut data) {
+        Ok(_) => defmt::debug!("Got {}", data),
+        Err(e) => defmt::warn!("Error writing: {:?}", defmt::Debug2Format(&e)),
+    }*/
 
     defmt::debug!("Setting up microsecond clock...");
     let clock = clock::MicrosecondClock::new(dp.TIM2, &mut rcc);
@@ -262,6 +308,10 @@ fn main() -> ! {
     )
     .unwrap();
 
+    defmt::debug!("Setting up watchdog...");
+    let mut iwdg = independent_watchdog::IndependentWatchdog::new(dp.IWDG);
+    iwdg.start(controllers::PWR_CTRL_TICK_US.micros() * 2);
+
     // NOTE: add calls like the following if you want to listen for specific messages
     /*node.subscribe_message(
         LED_UPDATE_SUBJECT,
@@ -306,7 +356,7 @@ fn main() -> ! {
         // TEST LOOPS
         if node
             .clock()
-            .advance_if_elapsed(&mut tim_test0, 1.secs())
+            .advance_if_elapsed(&mut tim_test0, 3.secs())
         {
             const TEST_CHANNEL: controllers::PwrChan = controllers::PwrChan::CH0;
             if power_controller.status(TEST_CHANNEL) == PwrChanState::Enabled {
@@ -315,11 +365,12 @@ fn main() -> ! {
             } else {
                 defmt::info!("Enabling CH0...");
                 power_controller.enable(TEST_CHANNEL);
+                power_controller.enable(controllers::PwrChan::CH1);
             }
         }
         if node
             .clock()
-            .advance_if_elapsed(&mut tim_test1, 2.secs())
+            .advance_if_elapsed(&mut tim_test1, 9.secs())
         {
             const TEST_CHANNEL2: controllers::PwrChan = controllers::PwrChan::CH2;
             if power_controller.status(TEST_CHANNEL2) == PwrChanState::Enabled {
@@ -337,6 +388,7 @@ fn main() -> ! {
         {
             defmt::trace!("Doing power subsystem tick...");
             power_controller.tick();
+            iwdg.feed();
         }
 
         if node
@@ -454,6 +506,9 @@ impl<T: Transport> TransferHandler<T> for CommsHandler<'_> {
         match req.command {
             // handle COMMAND_RESTART
             ExecuteCommandRequest::COMMAND_RESTART => {
+                defmt::warn!("Cyphal restart command received. Restarting...");
+                self.subsystem.disable_all();
+                self.subsystem.charge_pump_disable();
                 unsafe {
                     stm32g4xx_hal::stm32g4::stm32g474::CorePeripherals::steal()
                         .SCB

@@ -1,9 +1,9 @@
 use stm32g4xx_hal::{
-    adc::{self, config::SampleTime}, gpio::{self}, opamp, pac
+    adc::{self, config::SampleTime}, gpio::{self}, opamp, pac, pwm
 };
 
 // How often the "tick" function should be called in the superloop
-pub const PWR_CTRL_TICK_US: u32 = 50_000; // 50 ms
+pub const PWR_CTRL_TICK_US: u32 = 10_000; // 10 ms
 
 //////////////////////////////
 // POWER CHANNEL CODE BLOCK //
@@ -66,6 +66,7 @@ pub struct PowerController {
     adc2: adc::Adc<pac::ADC2, adc::Configured>,
     //adc3: adc::Adc<pac::ADC3, adc::Configured>,
     //adc4: adc::Adc<pac::ADC4, adc::Configured>,
+    charge_pump_pwm: pwm::Pwm<pac::TIM3, pwm::C4, pwm::ComplementaryImpossible, pwm::ActiveHigh, pwm::ActiveHigh>,
 }
 
 impl PowerController {
@@ -80,14 +81,16 @@ impl PowerController {
         //adc3: adc::Adc<pac::ADC3, adc::Configured>,
         //adc4: adc::Adc<pac::ADC4, adc::Configured>,
         //opamp1: opamp::Pga<opamp::Opamp1, gpio::PA1, gpio::PA2>,
-        opamp1: opamp::Pga<opamp::Opamp1, gpio::PA1, opamp::InternalOutput>,
-        opamp2: opamp::Pga<opamp::Opamp2, gpio::PA7, gpio::PA6>,
+        ch0_opamp: opamp::Pga<opamp::Opamp1, gpio::PA1, opamp::InternalOutput>,
         opamp3: opamp::Pga<opamp::Opamp3, gpio::PB0, gpio::PB1>,
+        //ch2_opamp: opamp::Pga<opamp::Opamp2, gpio::PA7, opamp::InternalOutput>,
+        ch2_opamp: opamp::Pga<opamp::Opamp2, gpio::PA7, gpio::PA6>,
         opamp4: opamp::Pga<opamp::Opamp4, gpio::PB11, gpio::PB12>,
         sense0: gpio::PA2<gpio::Analog>,
         sense1: gpio::PA6<gpio::Analog>,
         sense2: gpio::PB1<gpio::Analog>,
         sense3: gpio::PB12<gpio::Analog>,
+        charge_pump_pwm: pwm::Pwm<pac::TIM3, pwm::C4, pwm::ComplementaryImpossible, pwm::ActiveHigh, pwm::ActiveHigh>,
     ) -> Self {
         // assume opamps configured correctly...
         PowerController {
@@ -98,9 +101,9 @@ impl PowerController {
                 en_pin3,
             ],
             opamps: (
-                opamp1,
+                ch0_opamp,
                 opamp3,
-                opamp2,
+                ch2_opamp,
                 opamp4,
             ),
             sense_pins: (
@@ -121,6 +124,7 @@ impl PowerController {
             adc2,
             //adc3,
             //adc4,
+            charge_pump_pwm,
         }
     }
 
@@ -128,36 +132,56 @@ impl PowerController {
     pub fn tick(&mut self) {
         const OPAMP_GAIN: u32 = 64;
         const SENSE_RESISTOR_MILLIOHM: u32 = 1;
-        // TODO: figure out a consistent way of identifying this? since our ADC readings depend on it
-        // or use a more stable reference
-        const VDDA_MILLIVOLT: u32 = 3200; // as measured with multimeter :-)
         const RESOLUTION_BITS: usize = 12;
+        const VREFINT_CALREF_MILLIVOLT: u32 = 3000;
+        // TODO: add a way of getting the calibration value easily to HAL
+        const VREFINT_CAL_ADDR: *mut u16 = 0x1FFF_75AA as *mut u16;
+        // fetch VDDA every tick? screw it, sure
+        let vref_data: u32 = self.adc1.convert(&adc::Vref, adc::config::SampleTime::Cycles_24_5) as u32;
+        let vrefint_cal: u32 = unsafe {
+            let value = VREFINT_CAL_ADDR.read_volatile();
+            value as u32
+        };
+        let vdda_millivolt: u32 = VREFINT_CALREF_MILLIVOLT * vrefint_cal / vref_data;
 
-        fn sample_to_milliamps(sample: u32) -> u32 {
-            sample * VDDA_MILLIVOLT / (1 << RESOLUTION_BITS) * 1_000 / (SENSE_RESISTOR_MILLIOHM * OPAMP_GAIN)
-        }
+        // this technically has worst-case error of +/- 1500 mA for 1 mOhm resistor due to input offset voltage,
+        // but seems to be accurate to within maybe +/- 500 mA in practice
+        let sample_to_milliamps = |sample: u32| -> u32 {
+            sample * vdda_millivolt / (1 << RESOLUTION_BITS) * 1_000 / (SENSE_RESISTOR_MILLIOHM * OPAMP_GAIN)
+        };
 
         // TODO: Check for overcurrent conditions and trip fault if so
         // TODO: test ch1, ch3
-        //let ch0_sample = self.adc1.convert(&self.sense_pins.0, SampleTime::Cycles_24_5) as u32;
-        // TODO: figure out why CH0 values now slightly too high?
-        let ch0_sample = self.adc1.convert(&self.opamps.0, SampleTime::Cycles_24_5) as u32;
-        let ch1_sample = self.adc1.convert(&self.sense_pins.1, SampleTime::Cycles_24_5) as u32;
-        // TODO: figure out why the CH2 values are lower than what we expect -- ADC2 calibration?
-        // ...or the external filtering?
-        let ch2_sample = self.adc2.convert(&self.sense_pins.2, SampleTime::Cycles_24_5) as u32;
-        let ch3_sample = self.adc1.convert(&self.sense_pins.3, SampleTime::Cycles_24_5) as u32;
+        // TODO: calculate and verify sample time so we have some filtering but also don't miss deadlines
+        let ch0_sample = self.adc1.convert(&self.opamps.0, SampleTime::Cycles_640_5) as u32;
+        //let ch0_sample = self.adc1.convert(&self.sense_pins.0, SampleTime::Cycles_640_5) as u32;
+        let ch1_sample = self.adc1.convert(&self.sense_pins.1, SampleTime::Cycles_640_5) as u32;
+        let ch2_sample = self.adc2.convert(&self.sense_pins.2, SampleTime::Cycles_640_5) as u32;
+        let ch3_sample = self.adc1.convert(&self.sense_pins.3, SampleTime::Cycles_640_5) as u32;
 
         const VBUS_DIVIDER_DENOM: u32 = 23; // 10k - 220k divider
-        let vbus_sample = self.adc1.convert(&self.vsense_pin, SampleTime::Cycles_24_5) as u32;
+        let vbus_sample = self.adc1.convert(&self.vsense_pin, SampleTime::Cycles_640_5) as u32;
 
-        defmt::debug!("CH0 {} mA\tCH1 {} mA\tCH2 {} mA\tCH3 {} mA\tVBUS {} mV",
+        defmt::trace!("CH0 {} mA\tCH1 {} mA\tCH2 {} mA\tCH3 {} mA\tVBUS {} mV\tVDDA {} mV",
             sample_to_milliamps(ch0_sample),
             sample_to_milliamps(ch1_sample),
             sample_to_milliamps(ch2_sample),
             sample_to_milliamps(ch3_sample),
-            vbus_sample * VDDA_MILLIVOLT * VBUS_DIVIDER_DENOM / (1 << RESOLUTION_BITS)
+            vbus_sample * vdda_millivolt * VBUS_DIVIDER_DENOM / (1 << RESOLUTION_BITS),
+            vdda_millivolt
         );
+    }
+
+    #[inline(always)]
+    pub fn charge_pump_enable(&mut self) {
+        //if self.controller_state == PwrCtrlState::
+        self.charge_pump_pwm.enable();
+    }
+
+    #[inline(always)]
+    pub fn charge_pump_disable(&mut self) {
+        //if self.controller_state == PwrCtrlState::
+        self.charge_pump_pwm.disable();
     }
 
     #[inline(always)]
@@ -168,6 +192,8 @@ impl PowerController {
         if self.channel_state[idx] != PwrChanState::Fault {
             self.pwr_channel[idx].set_low();
             self.channel_state[idx] = PwrChanState::Enabled;
+        } else {
+            defmt::warn!("Can't enable CH{} due to fault state", pwr_chan as u8);
         }
     }
 
@@ -178,6 +204,8 @@ impl PowerController {
         if self.channel_state[idx] != PwrChanState::Fault {
             self.pwr_channel[idx].set_high();
             self.channel_state[idx] = PwrChanState::Disabled;
+        } else {
+            defmt::warn!("Tried to enable CH{} in fault state", pwr_chan as u8);
         }
     }
 

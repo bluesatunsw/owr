@@ -34,4 +34,10 @@ in a 10-deep nested shell - running an invalid command will kill 1 level!
 | -------------------------------                                       | --------------------------------                                                          |
 | `ros2 launch rover rsp.launch.py`                                     | Robot State Publisher, publishes the URDF+JSP, to make it viewable in Lichtblick / Rviz2. |
 | `xacro ./src/rover/description/robot.urdf.xacro > ./build/rover.urdf` | Compiles the xacro into a singular urdf file                                              |
-| `ros2 run key_teleop key_teleop --ros-args -p twist_stamped_enabled:=True -r /key_vel:=/diff_drive_base_controller/cmd_vel` | Record keyboard imputs and publish them as Twist2d values, which ROS2Control is listening for!                              |
+| `ros2 run key_teleop key_teleop --ros-args -p twist_stamped_enabled:=True -r /key_vel:=/diff_drive_base_controller/cmd_vel` | Record keyboard imputs and publish them as Twist2d values, which ROS2Control is listening for!
+
+### Useful Podman Commands
+| Command                                                               | Effect                                                                                    |
+| -------------------------------                                       | ---------------------------------                                                         |
+| `podman images`                                                       | Lists current podman images                                                               |
+| `podman rmi {ID} --force`                                             | Remove relevant image. Replace the ID with output from the above command                  |

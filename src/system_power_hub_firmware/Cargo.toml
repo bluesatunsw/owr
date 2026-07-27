@@ -1,5 +1,5 @@
 [package]
-authors = ["Sean Haines <seanhaines2007@gmail.com>"]
+authors = ["Sean Haines <seanhaines2007@gmail.com>", "Kaelan Nah <kaelanjn@gmail.com>"]
 edition = "2024"
 readme = "README.md"
 name = "system_power_hub_firmware"
@@ -25,6 +25,7 @@ embedded-io = "0.6.1"
 libm = "0.2.15"
 cortex-m-log = { version = "0.8.0", features = ["itm"]}
 embedded_common = { path="../embedded_common"}
+panic-halt = "1.0.0"
 
 [dependencies.cortex-m]
 version = "0.7.7"
@@ -32,7 +33,7 @@ features = ["critical-section-single-core"]
 
 # allows use of `cargo fix`
 [[bin]]
-name = "main_power_hub_firmware"
+name = "system_power_hub_firmware"
 test = false
 bench = false
 

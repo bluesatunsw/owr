@@ -57,28 +57,35 @@ fn main() -> ! {
     let gpioc = dp.GPIOC.split(&mut rcc);
     let gpiod = dp.GPIOD.split(&mut rcc);
 
-    let mut chan0 = gpioa.pa10.into_push_pull_output();
-    let mut chan1 = gpioc.pc11.into_push_pull_output();
-    let mut chan2 = gpiob.pb9.into_push_pull_output();
-    let mut chan3 = gpiod.pd2.into_push_pull_output();
-    let mut chan4 = gpiob.pb10.into_push_pull_output();
-    let mut chan5 = gpioa.pa4.into_push_pull_output();
-    let mut chan6 = gpioc.pc6.into_push_pull_output();
-    let mut chan7 = gpioc.pc7.into_push_pull_output();
+    // These are the logical channels NOT the channels
+    // labled on the schematic of the board
+    let mut chan2 = gpioa.pa10.into_push_pull_output();     // CH0 -> 2
+    let mut chan0 = gpioc.pc11.into_push_pull_output();     // CH1 -> 0
+    let mut chan6 = gpiob.pb9.into_push_pull_output();      // CH2 -> 6
+    let mut chan4 = gpiod.pd2.into_push_pull_output();      // CH3 -> 4
+    let mut chan5 = gpiob.pb10.into_push_pull_output();     // CH4 -> 5
+    let mut chan7 = gpioa.pa4.into_push_pull_output();      // CH5 -> 7
+    let mut chan1 = gpioc.pc6.into_push_pull_output();      // CH6 -> 1
+    let mut chan3 = gpioc.pc7.into_push_pull_output();      // CH7 -> 3
 
     let mut vdrive_clk = gpioa.pa15.into_push_pull_output();
+
+    // let cp_clk_pin = gpioa.pa15.into_alternate();
+    // let mut vdrive_pwm = dp.TIM2.pwm(cp_clk_pin, 50.kHz(), &mut rcc);
+    // vdrive_pwm.set_duty_cycle_percent(5);
+    // vdrive_pwm.enable();
 
     let mut delay_syst = cp.SYST.delay(&rcc.clocks);
 
     // Channels are active low
-    chan0.set_low();
+    chan0.set_high();
     chan1.set_low();
     chan2.set_high();
-    chan3.set_high();
+    chan3.set_low();
     chan4.set_high();
-    chan5.set_high();
+    chan5.set_low();
     chan6.set_high();
-    chan7.set_high();
+    chan7.set_low();
 
     loop {
 

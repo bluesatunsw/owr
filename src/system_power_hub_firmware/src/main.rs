@@ -2,7 +2,7 @@
 #![no_main]
 
 use cortex_m_rt::entry;
-use panic_halt as _;
+use panic_probe as _;
 
 use stm32g4xx_hal::{
     gpio::{self, GpioExt}, pac, prelude::*, pwm::PwmExt, pwr::{PwrExt, VoltageScale}, rcc::{
@@ -19,11 +19,11 @@ use stm32g4xx_hal::{
 
 #[entry]
 fn main() -> ! {
-    
+
     let dp = pac::Peripherals::take().unwrap();
     let cp = pac::CorePeripherals::take().unwrap();
     let pwr = dp.PWR.constrain().vos(VoltageScale::Range1 { enable_boost: true }).freeze();
-        
+
     let mut rcc = dp.RCC.freeze(
         Config::pll()
             .pll_cfg(PllConfig {
@@ -69,10 +69,10 @@ fn main() -> ! {
     let mut vdrive_clk = gpioa.pa15.into_push_pull_output();
 
     let mut delay_syst = cp.SYST.delay(&rcc.clocks);
-    
+
     // Channels are active low
     chan0.set_low();
-    chan1.set_high();
+    chan1.set_low();
     chan2.set_high();
     chan3.set_high();
     chan4.set_high();
@@ -81,7 +81,7 @@ fn main() -> ! {
     chan7.set_high();
 
     loop {
-        
+
         // bit banged 5% duty cycleat 50khz, probably replace with timer
         // note that the duty cycle cannot be too high. Consider the power through R202
         vdrive_clk.set_low();

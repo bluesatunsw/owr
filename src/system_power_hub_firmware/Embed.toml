@@ -1,0 +1,8 @@
+[default.general]
+chip = "STM32G474RBTx"
+
+[default.rtt]
+enabled = true
+
+[default.gdb]
+enabled = true

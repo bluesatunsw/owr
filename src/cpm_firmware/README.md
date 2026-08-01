@@ -1,11 +1,10 @@
-# CPM Bringup
+# Compute Power Module (CPM)
 
-I kind of copied everything from the cpm_firmware folder. Should be mostly fine?
+On-board LEDs from top to bottom:
+- Status light
+    - Amber for initialisation, green if all good, flashing red to indicate a fault (OCP on any channel)
+- CAN activity light
+    - Blue for RX, green for TX
 
-See also `main.rs` (and maybe `Cargo.toml`).
-
-## Running and debugging the firmware
-
-`openocd -f openocd/stm32g4x.cfg` and `cargo run --release if you have an
-ST-LINK connected. It's pretty much necessary to run in release mode due to
-space optimisations being necessary to fit onto the device.
+Due to ADC routing limitations, the VBUS sense is managed by ExtARGBCtrl rather
+than CorePowerCtrl

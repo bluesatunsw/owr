@@ -21,6 +21,7 @@ stm32g4xx-hal = { git = "https://github.com/bluesatunsw/stm32g4xx-hal", version 
 embedded-common = { git = "https://github.com/bluesatunsw/embedded_common" }
 embedded-alloc = "0.7.0"
 panic-probe = { version = "1.0", features = ["defmt"] }
+libm = "0.2.16"
 
 # cargo build/run
 [profile.dev]

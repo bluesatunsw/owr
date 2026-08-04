@@ -19,6 +19,10 @@ use defmt_rtt as _;
 const NUM_LEDS: usize = 300;
 const RED: Colour = Colour {r: 255, b: 0, g: 0};
 const GREEN: Colour = Colour {r: 0, b: 0, g: 255};
+const BLUE: Colour = Colour {r: 0, b: 255, g: 0};
+const MAGENTA: Colour = Colour {r: 255, b: 255, g: 0};
+const YELLOW: Colour = Colour {r: 255, b: 0, g: 255};
+const CYAN: Colour = Colour {r: 0, b: 255, g: 255};
 const DEFAULT_BRIGHTNESS: u8 = 64;
 
 mod controller;
@@ -199,9 +203,13 @@ fn main() -> ! {
     let en19v = gpioc.pc7.into_push_pull_output_in_state(PinState::Low);
     let vsense24v = gpioc.pc0.into_analog();
     let vsense19v = gpioc.pc1.into_analog();
+    let temp24v = gpioa.pa1.into_analog();
+    let temp19v = gpioa.pa0.into_analog();
+    let temp5v = gpioa.pa7.into_analog();
     let mut power_ctrl = PowerCtrl::new(
         en24v, en19v,
         adc2, adc3, vsense24v, vsense19v,
+        temp24v, temp19v, temp5v,
         i24v_opamp, i19v_opamp, isense24v, isense19v
     );
 
@@ -215,12 +223,14 @@ fn main() -> ! {
     let lc2 = argb::Controller::new(dp.USART3, gpiob.pb9.into_alternate(), 255, &mut rcc);
     let lc3 = argb::Controller::new(dp.USART1, gpioc.pc4.into_alternate(), 255, &mut rcc);
     let vsense5v = gpioc.pc2.into_analog();
+    let temp12v = gpioa.pa3.into_analog();
     let mut ext_led_ctrl = ExtARGBCtrl::new(
         lc0, lc1, lc2, lc3,
         nen5a, nen5b,
         adc1, adc5,
         vsense5v,
         isense5a, isense5b,
+        temp12v,
         i5a_opamp, i5b_opamp,
     );
 
@@ -244,17 +254,54 @@ fn main() -> ! {
     let mut rolling_19v_sum_centivolts: u64 = min_19v_centivolts;
     let mut num_samples: u64 = 1;
 
+    // brownout test
+    /*loop {
+        let cpwrdata = power_ctrl.tick();
+        defmt::println!("+24V line\t{}.{:02} V\tdrawing {} mA",
+            cpwrdata.v24v_centivolts / 100,
+            cpwrdata.v24v_centivolts % 100,
+            cpwrdata.i24v_milliamps
+        );
+        defmt::println!("+19V line\t{}.{:02} V\tdrawing {} mA",
+            cpwrdata.v19v_centivolts / 100,
+            cpwrdata.v19v_centivolts % 100,
+            cpwrdata.i19v_milliamps
+        );
+        const VBUS_DIVIDER_DENOM: u32 = 23; // 10k - 220k divider
+        let vbus_sample = adc4.convert(&vbus_sense, SampleTime::Cycles_640_5) as u32;
+        let mut vbus_millivolts = vbus_sample * 3200 * VBUS_DIVIDER_DENOM / (1 << 12);
+        defmt::println!("VBUS = {} mV", vbus_millivolts);
+        /*if vbus_millivolts < 20000 {
+            power_ctrl.disable_19v();
+            power_ctrl.disable_24v();
+            defmt::println!("BROWNOUT!!!");
+            onboard_leds.display(&[RED; 3]);
+            while vbus_millivolts < 20500 {
+                let vbus_sample = adc4.convert(&vbus_sense, SampleTime::Cycles_640_5) as u32;
+                vbus_millivolts = vbus_sample * 3200 * VBUS_DIVIDER_DENOM / (1 << 12);
+                delay.delay(1.millis());
+            }
+            defmt::println!("back to normal");
+            onboard_leds.display(&[Colour {r: 0, g: 255, b: 0}; 3]);
+            power_ctrl.enable_19v();
+            power_ctrl.enable_24v();
+        }*/
+        delay.delay(1.millis());
+    }*/
+
     loop {
         power_ctrl.enable_19v();
         power_ctrl.enable_24v();
+        ext_led_ctrl.enable_a();
+        ext_led_ctrl.enable_b();
         onboard_leds.display(&[GREEN, GREEN, GREEN]);
-        // 15 seconds
-        for _ in 0..150 {
+        // 1 second
+        for _ in 0..200 {
             let cpwrdata = power_ctrl.tick();
-            /*lc0.display(&leds);
-            lc1.display(&leds);
-            lc2.display(&leds);
-            lc3.display(&leds);*/
+            ext_led_ctrl.ctrl.0.display(&[RED; 100]);
+            ext_led_ctrl.ctrl.1.display(&[BLUE; 100]);
+            ext_led_ctrl.ctrl.2.display(&[MAGENTA; 100]);
+            ext_led_ctrl.ctrl.3.display(&[YELLOW; 100]);
             let v24v_cv = cpwrdata.v24v_centivolts as u64;
             rolling_24v_sum_centivolts += v24v_cv;
             num_samples += 1;
@@ -270,7 +317,7 @@ fn main() -> ! {
                 max_24v_centivolts % 100,
                 cpwrdata.i24v_milliamps
             );
-            defmt::println!("Raw 24V current ADC sample: {}", cpwrdata.i24v_raw);
+            defmt::println!("+24V temperature\t{} degrees C", cpwrdata.t24v_celsius);
             let v19v_cv = cpwrdata.v19v_centivolts as u64;
             rolling_19v_sum_centivolts += v19v_cv;
             if v19v_cv < min_19v_centivolts { min_19v_centivolts = v19v_cv }
@@ -285,26 +332,28 @@ fn main() -> ! {
                 max_19v_centivolts % 100,
                 cpwrdata.i19v_milliamps
             );
-            defmt::println!("Raw 19V current ADC sample: {}", cpwrdata.i19v_raw);
-            defmt::println!("This implies sense resistor voltage {} mV", cpwrdata.i19v_raw * 3200 / (1 << 12) / 8);
+            defmt::println!("+19V temperature\t{} degrees C", cpwrdata.t19v_celsius);
+            defmt::println!("+5V temperature\t{} degrees C", cpwrdata.t5v_celsius);
             let vbus_sample = adc4.convert(&vbus_sense, SampleTime::Cycles_640_5) as u32;
             const VBUS_DIVIDER_DENOM: u32 = 23; // 10k - 220k divider
             defmt::println!("VBUS = {} mV", vbus_sample * 3200 * VBUS_DIVIDER_DENOM / (1 << 12));
             let ledpwrdata = ext_led_ctrl.tick();
             defmt::println!("+5V line: curr {}.{:02} V", ledpwrdata.v5v_centivolts / 100, ledpwrdata.v5v_centivolts % 100);
             defmt::println!("+5V A: {} mA\tB: {} mA", ledpwrdata.ia_milliamps, ledpwrdata.ib_milliamps);
+            defmt::println!("+12V temperature\t{} degrees C", ledpwrdata.t12v_celsius);
 
-            delay.delay(100.millis());
+            delay.delay(50.millis());
         }
-        onboard_leds.display(&[RED; 3]);
-        power_ctrl.disable_19v();
-        power_ctrl.disable_24v();
-        for _ in 0..50 { // 5 seconds
+        onboard_leds.display(&[YELLOW; 3]);
+        //ext_led_ctrl.disable_a();
+        ext_led_ctrl.disable_b();
+        //power_ctrl.disable_24v();
+        for _ in 0..1 { // 1 second
             let cpwrdata = power_ctrl.tick();
-            /*lc0.display(&leds);
-            lc1.display(&leds);
-            lc2.display(&leds);
-            lc3.display(&leds);*/
+            ext_led_ctrl.ctrl.0.display(&[GREEN; 300]);
+            ext_led_ctrl.ctrl.1.display(&[YELLOW; 300]);
+            ext_led_ctrl.ctrl.2.display(&[BLUE; 300]);
+            ext_led_ctrl.ctrl.3.display(&[CYAN; 300]);
             let v24v_cv = cpwrdata.v24v_centivolts as u64;
             rolling_24v_sum_centivolts += v24v_cv;
             num_samples += 1;
@@ -320,7 +369,6 @@ fn main() -> ! {
                 max_24v_centivolts % 100,
                 cpwrdata.i24v_milliamps
             );
-            defmt::println!("Raw 24V current ADC sample: {}", cpwrdata.i24v_raw);
             let v19v_cv = cpwrdata.v19v_centivolts as u64;
             rolling_19v_sum_centivolts += v19v_cv;
             if v19v_cv < min_19v_centivolts { min_19v_centivolts = v19v_cv }
@@ -335,12 +383,13 @@ fn main() -> ! {
                 max_19v_centivolts % 100,
                 cpwrdata.i19v_milliamps
             );
-            defmt::println!("Raw 19V current ADC sample: {}", cpwrdata.i19v_raw);
-            defmt::println!("This implies sense resistor voltage {} mV", cpwrdata.i19v_raw * 3200 / (1 << 12) / 8);
             let vbus_sample = adc4.convert(&vbus_sense, SampleTime::Cycles_640_5) as u32;
             const VBUS_DIVIDER_DENOM: u32 = 23; // 10k - 220k divider
             defmt::println!("VBUS = {} mV", vbus_sample * 3200 * VBUS_DIVIDER_DENOM / (1 << 12));
-            delay.delay(100.millis());
+            let ledpwrdata = ext_led_ctrl.tick();
+            defmt::println!("+5V line: curr {}.{:02} V", ledpwrdata.v5v_centivolts / 100, ledpwrdata.v5v_centivolts % 100);
+            defmt::println!("+5V A: {} mA\tB: {} mA", ledpwrdata.ia_milliamps, ledpwrdata.ib_milliamps);
+            delay.delay(50.millis());
         }
     }
 }

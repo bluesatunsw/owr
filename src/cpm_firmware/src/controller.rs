@@ -1,5 +1,5 @@
 use embedded_common::argb;
-use stm32g4xx_hal::{adc::{self, config::SampleTime}, gpio, independent_watchdog, opamp, pac::{self, uart4::cr1::RE}};
+use stm32g4xx_hal::{adc::{self, config::SampleTime}, gpio, opamp, pac};
 
 const VDDA_CENTIVOLT: u32 = 320;
 const RESOLUTION_BITS: usize = 12;

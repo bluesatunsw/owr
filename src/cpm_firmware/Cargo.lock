@@ -194,6 +194,9 @@ dependencies = [
 name = "cpm_bringup"
 version = "0.0.1"
 dependencies = [
+ "canadensis",
+ "canadensis_can",
+ "canadensis_data_types",
  "cortex-m",
  "cortex-m-rt",
  "defmt",

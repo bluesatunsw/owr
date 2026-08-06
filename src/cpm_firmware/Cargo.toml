@@ -5,12 +5,6 @@ readme = "README.md"
 name = "cpm_bringup"
 version = "0.0.1"
 
-# allows use of `cargo fix`
-[[bin]]
-name = "cpm_bringup"
-test = false
-bench = false
-
 [dependencies]
 cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
@@ -22,6 +16,9 @@ embedded-common = { git = "https://github.com/bluesatunsw/embedded_common" }
 embedded-alloc = "0.7.0"
 panic-probe = { version = "1.0", features = ["defmt"] }
 libm = "0.2.16"
+canadensis = "0.5.0"
+canadensis_can = { version = "0.5.1", features = ["can-fd"] }
+canadensis_data_types = "0.5.0"
 
 # cargo build/run
 [profile.dev]

@@ -42,7 +42,7 @@ use canadensis_can::{CanNodeId, CanReceiver, CanTransmitter, CanTransport, Mtu};
  * ...
 }; */
 
-use canadensis_data_types::uavcan::node::execute_command_1_3::SERVICE as EXECUTE_COMMAND_SERVICE;
+use canadensis_data_types::uavcan::node::execute_command_1_3::{self, SERVICE as EXECUTE_COMMAND_SERVICE};
 use canadensis_data_types::uavcan::node::execute_command_1_3::{
     ExecuteCommandRequest, ExecuteCommandResponse,
 };
@@ -147,6 +147,8 @@ fn main() -> ! {
     delay.delay(100.micros());
     // there are six (6) LEDs on this board
     argb.display(&[AMBER; 6]);
+
+    delay.delay(1.secs());
 
     // ADC setup
     defmt::debug!("Configuring ADC12...");
@@ -319,6 +321,11 @@ fn main() -> ! {
         MicrosecondDuration32::from_ticks(TID_TIMEOUT_US),
     )
     .unwrap();*/
+    node.subscribe_request(
+        EXECUTE_COMMAND_SERVICE,
+        size_of::<ExecuteCommandRequest>(),
+        MicrosecondDuration32::from_ticks(TID_TIMEOUT_US)
+    ).unwrap();
 
     // NOTE: add calls like the following to publish specific messages
     /*defmt::trace!("Starting publication of LED messages...");
@@ -340,7 +347,7 @@ fn main() -> ! {
     defmt::info!("System initialised. Entering superloop...");
     loop {
         // Handle Cyphal tasks
-        // node.receive(&mut CommsHandler { state: &mut comms_state, subsystem: &mut subsystem } ).unwrap();
+        node.receive(&mut CommsHandler { state: &mut comms_state, subsystem: &mut power_controller } ).unwrap();
 
         // You can set the health of the node to represent the state of the subsystem to be
         // signalled over Cyphal/CAN in the heartbeat messages:
@@ -350,7 +357,7 @@ fn main() -> ! {
             .clock()
             .advance_if_elapsed(&mut tim_heartbeat, HEARTBEAT_PERIOD_US.micros())
         {
-            // node.run_per_second_tasks().unwrap();
+            node.run_per_second_tasks().unwrap();
         }
 
         // TEST LOOPS
@@ -506,17 +513,12 @@ impl<T: Transport> TransferHandler<T> for CommsHandler<'_> {
         match req.command {
             // handle COMMAND_RESTART
             ExecuteCommandRequest::COMMAND_RESTART => {
+                // NOTE: this doesn't actually print as the restart usually happens before the host
+                // picks up on the RTT message
                 defmt::warn!("Cyphal restart command received. Restarting...");
                 self.subsystem.disable_all();
                 self.subsystem.charge_pump_disable();
-                unsafe {
-                    stm32g4xx_hal::stm32g4::stm32g474::CorePeripherals::steal()
-                        .SCB
-                        .aircr
-                        .write(0x05FA_0004);
-                };
-                // SAFETY: The above operation will instantly reset the MCU
-                unsafe { unreachable_unchecked() }
+                stm32g4xx_hal::stm32g4::stm32g474::SCB::sys_reset();
             }
             // NOTE: add any other request handlers here
             _ => {

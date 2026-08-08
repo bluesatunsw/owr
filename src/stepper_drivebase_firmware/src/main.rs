@@ -1,6 +1,3 @@
-#![allow(internal_features)]
-#![feature(never_type)]
-#![feature(core_intrinsics)]
 #![no_std]
 #![no_main]
 
@@ -22,9 +19,7 @@ use canadensis_data_types::{
     reg::udral::physics::kinematics::rotation::planar_0_1::Planar,
     uavcan::{node::health_1_0::Health, si::unit::angle},
 };
-use core::{hint::unreachable_unchecked, intrinsics::breakpoint, panic::PanicInfo};
 use cortex_m_rt::entry;
-use cortex_m_semihosting::hprintln;
 use embedded_alloc::LlffHeap as Heap;
 use embedded_common::{
     argb::{self, Colour},
@@ -50,6 +45,9 @@ use canadensis_data_types::uavcan::node::execute_command_1_3::{
     ExecuteCommandRequest, ExecuteCommandResponse,
 };
 
+use panic_probe as _;
+use defmt_rtt as _;
+
 use crate::drivebase::Drivebase;
 
 extern crate alloc;
@@ -65,10 +63,10 @@ const CYPHAL_NUM_TOPICS: usize = 8;
 const CYPHAL_NUM_SERVICES: usize = 8;
 
 const HEARTBEAT_PERIOD_US: u32 = 1_000_000;
-const TELEM_PERIOD_US: u32 = 50_000;
+const TELEM_PERIOD_US: u32 = 1_000;
 const TID_TIMEOUT_US: u32 = 100_000;
 
-const ENABLE_TELEM: bool = false;
+const ENABLE_TELEM: bool = true;
 
 // Cyphal message-IDs -- as per README
 const SETPOINT_MESSAGE_CHAN_0_ID: SubjectId = SubjectId::from_truncating(3000);
@@ -85,13 +83,6 @@ const POSITION_MESSAGE_CHAN_3_ID: SubjectId = SubjectId::from_truncating(3031);
 const RED: Colour = Colour { r: 255, g: 0, b: 0 };
 const BLUE: Colour = Colour { r: 0, g: 0, b: 255 };
 const DEFAULT_BRIGHTNESS: u8 = 15;
-
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    hprintln!("{}", _info.message());
-    breakpoint();
-    loop {}
-}
 
 // Global allocator -- required by canadensis.
 #[global_allocator]
@@ -138,6 +129,8 @@ fn main() -> ! {
         pwr,
     );
 
+    defmt::debug!("Configured clocks");
+
     // Set up pins.
     let gpioa = dp.GPIOA.split(&mut rcc);
     let gpiob = dp.GPIOB.split(&mut rcc);
@@ -147,14 +140,16 @@ fn main() -> ! {
     // Set PB8 to output mode to limit power consumption on reset
     gpiob.pb8.into_push_pull_output();
 
-    // Initialise various device drivers.
+    defmt::debug!("Setting up ARGB LED driver...");
     let mut argb = argb::Controller::new(
         dp.USART1,
         gpiob.pb6.into_alternate(),
         DEFAULT_BRIGHTNESS,
         &mut rcc,
     );
+    defmt::debug!("Setting up microsecond clock...");
     let clock = clock::MicrosecondClock::new(dp.TIM2, &mut rcc);
+    defmt::debug!("Setting up CAN driver...");
     let can = CanDriver::new(
         dp.FDCAN1,
         gpioa.pa11.into_alternate(),
@@ -162,6 +157,7 @@ fn main() -> ! {
         &mut rcc,
     );
 
+    defmt::debug!("Setting up drivebase driver...");
     let mut drivebase = Drivebase::new(
         (
             gpioc.pc10.into_alternate(),
@@ -221,7 +217,7 @@ fn main() -> ! {
         &mut rcc,
     );
 
-    // Initialise Cyphal (canadensis) node.
+    defmt::debug!("Setting up Cyphal core node...");
     let id = CanNodeId::from_truncating(NODE_ID);
     let transmitter = CanTransmitter::new(Mtu::CanFd64);
     let receiver = CanReceiver::new(id);
@@ -237,6 +233,7 @@ fn main() -> ! {
 
     // NOTE: node initialisation is a non-recoverable error and should only happen if we run out of
     // memory or the hardware is completely broken, hence all the unwrapping.
+    defmt::debug!("Setting up Cyphal basic node...");
     let mut node = BasicNode::new(
         core_node,
         GetInfoResponse {
@@ -258,6 +255,7 @@ fn main() -> ! {
     )
     .unwrap();
 
+    defmt::debug!("Subscribing to subject-IDs...");
     node.subscribe_message(
         SETPOINT_MESSAGE_CHAN_0_ID,
         size_of::<Planar>(),
@@ -290,6 +288,7 @@ fn main() -> ! {
     )
     .unwrap();
 
+    defmt::debug!("Starting publication of telemetry subjects...");
     if ENABLE_TELEM {
         node.start_publishing(POSITION_MESSAGE_CHAN_0_ID, 10.millis(), Priority::Nominal)
             .unwrap();
@@ -301,6 +300,7 @@ fn main() -> ! {
             .unwrap();
     }
 
+    defmt::debug!("Enabling steppers...");
     drivebase.steppers.enable_all();
     let mut comms_handler = CommsHandler { drivebase };
 
@@ -310,6 +310,7 @@ fn main() -> ! {
     let mut tim_argb = node.clock().now_const();
     let mut argb_phase = false;
 
+    defmt::info!("System initialised. Entering superloop.");
     loop {
         node.receive(&mut comms_handler).unwrap();
 
@@ -410,6 +411,7 @@ impl<T: Transport> TransferHandler<T> for CommsHandler {
         _node: &mut N,
         transfer: &MessageTransfer<alloc::vec::Vec<u8>, T>,
     ) -> bool {
+        defmt::debug!("Received message, subject {}", u32::from(transfer.header.subject));
         let op = match transfer.header.subject {
             SETPOINT_MESSAGE_CHAN_0_ID => Some(Channel::CH0),
             SETPOINT_MESSAGE_CHAN_1_ID => Some(Channel::CH1),
@@ -418,9 +420,9 @@ impl<T: Transport> TransferHandler<T> for CommsHandler {
             _ => None,
         };
         if let Some(chan) = op {
-            let msg = Planar::deserialize_from_bytes(&transfer.payload);
+            let msg = Planar::deserialize_from_bytes(&transfer.payload).unwrap();
             self.drivebase
-                .set_position(chan, TmcPosition(msg.unwrap().angular_position.radian))
+                .set_position(chan, TmcPosition(msg.angular_position.radian))
                 .unwrap();
             true
         } else {
@@ -442,14 +444,7 @@ impl<T: Transport> TransferHandler<T> for CommsHandler {
             ExecuteCommandRequest::deserialize_from_bytes(transfer.payload.as_slice()).unwrap();
         match req.command {
             ExecuteCommandRequest::COMMAND_RESTART => {
-                unsafe {
-                    stm32g4::stm32g474::CorePeripherals::steal()
-                        .SCB
-                        .aircr
-                        .write(0x05FA_0004);
-                };
-                // SAFETY: The above operation will instantly reset the  MCU
-                unsafe { unreachable_unchecked() }
+                stm32g4::stm32g474::SCB::sys_reset();
             }
             _ => {
                 node.send_response(

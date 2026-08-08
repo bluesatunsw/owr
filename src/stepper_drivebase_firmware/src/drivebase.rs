@@ -173,8 +173,8 @@ impl Drivebase {
     /// Returns true if the motor is currently actuating, which is determined by comparing the
     /// TMC5160's ramp profiler target position with its current position.
     #[allow(unused)]
-    pub fn is_busy(&mut self, channel: Channel) -> Result<bool, !> {
-        Ok(self.steppers.read_reg::<XTarget>(channel).unwrap().1 .0
-            != self.steppers.read_reg::<XActual>(channel).unwrap().1 .0)
+    pub fn is_busy(&mut self, channel: Channel) -> bool {
+        self.steppers.read_reg::<XTarget>(channel).unwrap().1 .0
+            != self.steppers.read_reg::<XActual>(channel).unwrap().1 .0
     }
 }

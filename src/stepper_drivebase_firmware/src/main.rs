@@ -25,7 +25,6 @@ use embedded_common::{
     argb::{self, Colour},
     can::CanDriver,
     clock,
-    stepper_bus::{Channel, StepperNcsPins},
     tmc_registers::TmcPosition,
 };
 use heapless::Vec;
@@ -49,12 +48,14 @@ use panic_probe as _;
 use defmt_rtt as _;
 
 use crate::drivebase::Drivebase;
+use crate::stepper_bus::{Channel, StepperNcsPins};
 
 extern crate alloc;
 
 mod as_registers;
 mod drivebase;
 mod encoder_bus;
+mod stepper_bus;
 
 // Cyphal constants
 const NODE_ID: u8 = 6;
@@ -63,7 +64,7 @@ const CYPHAL_NUM_TOPICS: usize = 8;
 const CYPHAL_NUM_SERVICES: usize = 8;
 
 const HEARTBEAT_PERIOD_US: u32 = 1_000_000;
-const TELEM_PERIOD_US: u32 = 1_000;
+const TELEM_PERIOD_US: u32 = 50_000;
 const TID_TIMEOUT_US: u32 = 100_000;
 
 const ENABLE_TELEM: bool = true;

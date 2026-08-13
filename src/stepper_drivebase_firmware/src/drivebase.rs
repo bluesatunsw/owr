@@ -1,7 +1,4 @@
 use embedded_common::{
-    stepper_bus::{
-        Channel, ClkPin, DiagPin, EnnPin, StepperBus, StepperNcsPins, StepperSpiPins, ALL_CHANNELS,
-    },
     tmc_registers::{
         AMax, ChopConf, DMax, GConf, GStat, GlobalScalar, IHoldIRun, PwmConf, RampMode, TPowerDown,
         TPwmThrs, TZeroWait, TmcPosition, UnitlessExt, UnitsExt, VMax, VStart, VStop, XActual,
@@ -10,6 +7,10 @@ use embedded_common::{
 };
 use hal::{pac, rcc::Rcc};
 use stm32g4xx_hal as hal;
+
+use crate::stepper_bus::{
+    Channel, ClkPin, DiagPin, EnnPin, StepperBus, StepperNcsPins, StepperSpiPins, ALL_CHANNELS,
+};
 
 /// Gear ratio between the stepper motor shaft and the shaft actually being driven.
 const GEAR_RATIO: f32 = 60.;

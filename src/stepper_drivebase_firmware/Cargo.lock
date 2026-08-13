@@ -21,6 +21,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
 
 [[package]]
+name = "autocfg"
+version = "1.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
+
+[[package]]
 name = "bare-metal"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -59,6 +65,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
+name = "bitvec"
+version = "1.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ddcec3d12c579d40898fe0a9a358a803c23e9c52ca3c425707f81c9436211837"
+dependencies = [
+ "funty",
+ "radium",
+ "tap",
+ "wyz",
+]
+
+[[package]]
 name = "byteorder"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -66,9 +84,9 @@ checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
 
 [[package]]
 name = "canadensis"
-version = "0.5.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57d4fe670aabc97b7106736b25a2c5ebed6c566a623fb50f07fc3acaba377d72"
+checksum = "b9d378f5c3d02795a637a0072ac21fa79cfc61514d334c654c40e90a5f202325"
 dependencies = [
  "canadensis_core",
  "canadensis_data_types",
@@ -78,40 +96,43 @@ dependencies = [
  "fallible_collections",
  "half",
  "heapless",
- "log",
+ "l0g",
+ "num-traits",
 ]
 
 [[package]]
 name = "canadensis_can"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd3d2db72cf5e5e304740bb62a75a870263cbde4991b0cd48dc0d0e949f38c8e"
+checksum = "2bb8f6817c6201af286ce0b8342351f0450c008b225f3f5a533014e1e6c7a050"
 dependencies = [
+ "bitvec",
  "canadensis_core",
  "canadensis_filter_config",
  "fallible_collections",
  "heapless",
- "log",
+ "l0g",
+ "num-traits",
 ]
 
 [[package]]
 name = "canadensis_core"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70646762d934bb9a2de2dd52353fd8f30ed8cc7ba7dabc2f7b6fcc83e2d2961b"
+checksum = "a84c5ee9d5a49d78ddd54ac539b05df2082b20bd58c1c1d71874e2cd5733e463"
 dependencies = [
  "fallible_collections",
  "fugit",
  "heapless",
- "log",
  "nb 1.1.0",
+ "num-traits",
 ]
 
 [[package]]
 name = "canadensis_data_types"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e40dfb7e9be176a6069ddfd368e8ed7b66f82fd8ee6c6039abc762002fb0948a"
+checksum = "a1ca6e4afd980b9d21b0d622e5c6762457e064bc3908d547b36ac07a217d9531"
 dependencies = [
  "canadensis_core",
  "canadensis_encoding",
@@ -122,9 +143,9 @@ dependencies = [
 
 [[package]]
 name = "canadensis_derive_register_block"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edceb5463d29ff783b5e5d036641b2abab83c9a85c31fa9e2f16e9eb18bdb51c"
+checksum = "940f3f6ef8266f6441ee82e916e400bae4a7b68a2cd5078459b94d00d6f50c48"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -133,9 +154,9 @@ dependencies = [
 
 [[package]]
 name = "canadensis_encoding"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c3e8300df81e1cff14c6fb894b8d4adc2c8e9a9698a1f1c27d82e0997939c8f"
+checksum = "9cdd38133b29d24f9dc412f62d6185277395108e25d6f92e3faf818efd10be9e"
 dependencies = [
  "half",
  "zerocopy",
@@ -143,9 +164,9 @@ dependencies = [
 
 [[package]]
 name = "canadensis_filter_config"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d265ccd922d8029e1b9832f91b2f3b82e1d62383c93823a80ad8acfa074ed27"
+checksum = "948dd3aad6178ee28051314b4e6dc2bb95ad2c27d9c721fce2e31da9828ee2cb"
 
 [[package]]
 name = "cast"
@@ -274,8 +295,8 @@ dependencies = [
 
 [[package]]
 name = "embedded-common"
-version = "0.0.1"
-source = "git+https://github.com/bluesatunsw/embedded_common/#66758e8e73f253ab2a4b56f78d73eb23f5ad3620"
+version = "0.1.0"
+source = "git+https://github.com/bluesatunsw/embedded_common/?branch=v0.1.0#4cd354f7b0f95d3bb09a4c6a7757071755bb239c"
 dependencies = [
  "bitfield-struct",
  "canadensis",
@@ -285,7 +306,6 @@ dependencies = [
  "fdcan",
  "fugit",
  "nb 1.1.0",
- "stm32g4",
  "stm32g4xx-hal",
 ]
 
@@ -352,6 +372,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "funty"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6d5a32815ae3f33302d95fdcb2ce17862f8c65363dcfd29360480ba1001fc9c"
+
+[[package]]
 name = "gcd"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -398,6 +424,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "l0g"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "784d5e5c89a40a5176dc64b0d737aaa80b868ee4ba8d156c6b65a0c700602c9c"
+dependencies = [
+ "l0g-macros",
+]
+
+[[package]]
+name = "l0g-macros"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fbd5ac9e7bc1365b6b607dbed23d5befdf8d2a1cfc075168c6aa00a2c4bb2fea"
+dependencies = [
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.114",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.180"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -408,12 +455,6 @@ name = "linked_list_allocator"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9afa463f5405ee81cdb9cc2baf37e08ec7e4c8209442b5d72c04cfb2cd6e6286"
-
-[[package]]
-name = "log"
-version = "0.4.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
 name = "nb"
@@ -429,6 +470,15 @@ name = "nb"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8d5439c4ad607c3c23abf66de8c8bf57ba8adcd1f129e699851a6e43935d339d"
+
+[[package]]
+name = "num-traits"
+version = "0.2.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
+dependencies = [
+ "autocfg",
+]
 
 [[package]]
 name = "once_cell"
@@ -459,6 +509,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c33a9471896f1c69cecef8d20cbe2f7accd12527ce60845ff44c153bb2a21b49"
 
 [[package]]
+name = "proc-macro-error"
+version = "1.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da25490ff9892aab3fcf7c36f08cfb902dd3e71ca0f9f9517bea02a73a5ce38c"
+dependencies = [
+ "proc-macro-error-attr",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+ "version_check",
+]
+
+[[package]]
+name = "proc-macro-error-attr"
+version = "1.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1be40180e52ecc98ad80b184934baf3d0d29f979574e439af5a55274b35f869"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "version_check",
+]
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.106"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -475,6 +549,12 @@ checksum = "21b2ebcf727b7760c461f091f9f0f539b77b8e87f2fd88131e7f1b433b3cece4"
 dependencies = [
  "proc-macro2",
 ]
+
+[[package]]
+name = "radium"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 
 [[package]]
 name = "rand_core"
@@ -656,6 +736,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "tap"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
+
+[[package]]
 name = "thiserror"
 version = "2.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -712,6 +798,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "de437e2a6208b014ab52972a27e59b33fa2920d3e00fe05026167a1c509d19cc"
 dependencies = [
  "vcell",
+]
+
+[[package]]
+name = "wyz"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "05f360fc0b24296329c78fda852a1e9ae82de9cf7b27dae4b7f62f118f77b9ed"
+dependencies = [
+ "tap",
 ]
 
 [[package]]

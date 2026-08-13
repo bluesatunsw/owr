@@ -1,5 +1,5 @@
 [package]
-authors = ["Jonah Hopkin <jonahhopkin@gmail.com>", "Evan LaFontaine", "Aavin Fernando", "Jethro Rosettenstein"]
+authors = ["Jonah Hopkin <turtle@turtle.business>", "Evan LaFontaine", "Aavin Fernando", "Jethro Rosettenstein"]
 edition = "2024"
 readme = "README.md"
 name = "stepper_drivebase_firmware"
@@ -10,9 +10,9 @@ cortex-m-rt = "0.7"
 defmt = "1.1"
 defmt-rtt = "1.0"
 panic-probe = { version = "1.0", features = ["defmt"] }
-canadensis = "0.5.0"
-canadensis_data_types = "0.5.0"
-canadensis_filter_config = "0.5.0"
+canadensis = "0.6.1"
+canadensis_data_types = "0.6.0"
+canadensis_filter_config = "0.6.0"
 heapless = "0.9.3"
 embedded-alloc = "0.7.0"
 # embedded-io = "0.6.1"
@@ -27,7 +27,7 @@ git = "https://github.com/bluesatunsw/stm32g4xx-hal"
 features = ["stm32g474", "rt", "can"]
 
 [dependencies.canadensis_can]
-version = "0.5.1"
+version = "0.6.0"
 features = ["can-fd"]
 
 [dependencies.cortex-m]
@@ -35,9 +35,10 @@ version = "0.7"
 features = ["critical-section-single-core"]
 
 [dependencies.embedded-common]
-version = "0.0.1"
+version = "0.1.0"
 git = "https://github.com/bluesatunsw/embedded_common/"
-features = ["stepper-board"]
+branch = "v0.1.0"
+features = ["stepper-board", "stm32g474", "can-fd"]
 
 # cargo build/run
 [profile.dev]

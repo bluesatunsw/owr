@@ -4,6 +4,8 @@
 #![no_main]
 
 extern crate alloc;
+use core::iter::zip;
+
 use embedded_alloc::LlffHeap as Heap;
 use embedded_common::{
     argb::{self, Colour},
@@ -19,16 +21,11 @@ use stm32g4xx_hal::{
 };
 
 use canadensis::{
-    core::{
-        time::MicrosecondDuration32, transfer::MessageTransfer, transport::Transport, Priority, SubjectId,
-    },
-    encoding::Deserialize,
-    node::{
-        data_types::{GetInfoResponse, Version},
-        BasicNode, CoreNode,
-    },
-    requester::TransferIdFixedMap,
-    Node, TransferHandler,
+    Node, TransferHandler, core::{
+        Priority, SubjectId, time::{MicrosecondDuration32, Microseconds32}, transfer::MessageTransfer, transport::Transport
+    }, encoding::Deserialize, node::{
+        BasicNode, CoreNode, data_types::{GetInfoResponse, Version}
+    }, requester::TransferIdFixedMap
 };
 use canadensis_can::{CanNodeId, CanReceiver, CanTransmitter, CanTransport, Mtu};
 
@@ -350,19 +347,11 @@ fn main() -> ! {
     // all good!
     onboard_leds.display(&[GREEN; 3]);
 
-    let cpwrdata = power_ctrl.tick();
-    let mut min_24v_centivolts: u64 = cpwrdata.v24v_centivolts as u64;
-    let mut max_24v_centivolts: u64 = cpwrdata.v24v_centivolts as u64;
-    let mut rolling_24v_sum_centivolts: u64 = min_24v_centivolts;
-    let mut min_19v_centivolts: u64 = cpwrdata.v19v_centivolts as u64;
-    let mut max_19v_centivolts: u64 = cpwrdata.v19v_centivolts as u64;
-    let mut rolling_19v_sum_centivolts: u64 = min_19v_centivolts;
-    let mut num_samples: u64 = 1;
-
     // Start the superloop.
     let mut tim_heartbeat = node.clock().now_const();
     let mut tim_telem = node.clock().now_const();
     let mut tim_argb = node.clock().now_const();
+    power_ctrl.enable_19v();
   
     let mut comms_state = CommsState {};
     // NOTE: You almost certainly want to replace the Subsystem with an actual subsystem
@@ -382,7 +371,7 @@ fn main() -> ! {
             .advance_if_elapsed(&mut tim_heartbeat, HEARTBEAT_PERIOD_US.micros())
         {
             defmt::debug!("Publishing node heartbeat...");
-            node.run_per_second_tasks().unwrap();
+            /*node.run_per_second_tasks().unwrap();*/
         }
         
         if node
@@ -390,13 +379,13 @@ fn main() -> ! {
             .advance_if_elapsed(&mut tim_telem, TELEM_PERIOD_US.micros())
         {
             defmt::trace!("Publishing LED telemetry...");
-            node.publish(
+            /*node.publish(
                 LED_TELEM_SUBJECT,
                 &natural8_1_0::Natural8 {
                     value: subsystem.hue as u8
                 },
             )
-            .unwrap();
+            .unwrap();*/
         }
 
     // brownout test
@@ -434,50 +423,76 @@ fn main() -> ! {
         delay.delay(1.millis());
     }*/
 
-        let cpwrdata = power_ctrl.tick();
-        ext_led_ctrl.ctrl.0.display(&[RED; 100]);
-        ext_led_ctrl.ctrl.1.display(&[BLUE; 100]);
-        ext_led_ctrl.ctrl.2.display(&[MAGENTA; 100]);
-        ext_led_ctrl.ctrl.3.display(&[YELLOW; 100]);
-        let v24v_cv = cpwrdata.v24v_centivolts as u64;
-        rolling_24v_sum_centivolts += v24v_cv;
-        num_samples += 1;
-        if v24v_cv < min_24v_centivolts { min_24v_centivolts = v24v_cv }
-        if v24v_cv > max_24v_centivolts { max_24v_centivolts = v24v_cv }
-        let avg_24v_centivolts: u32 = (rolling_24v_sum_centivolts / num_samples) as u32;
-        defmt::println!("+24V line: min {}.{:02} V, curr {}.{:02} V, max {}.{:02} V\tdrawing {} mA",
-            min_24v_centivolts / 100,
-            min_24v_centivolts % 100,
-            v24v_cv / 100,
-            v24v_cv % 100,
-            max_24v_centivolts / 100,
-            max_24v_centivolts % 100,
-            cpwrdata.i24v_milliamps
-        );
-        defmt::println!("+24V temperature\t{} degrees C", cpwrdata.t24v_celsius);
-        let v19v_cv = cpwrdata.v19v_centivolts as u64;
-        rolling_19v_sum_centivolts += v19v_cv;
-        if v19v_cv < min_19v_centivolts { min_19v_centivolts = v19v_cv }
-        if v19v_cv > max_19v_centivolts { max_19v_centivolts = v19v_cv }
-        let avg_19v_centivolts: u32 = (rolling_19v_sum_centivolts / num_samples) as u32;
-        defmt::println!("+19V line: min {}.{:02} V, curr {}.{:02} V, max {}.{:02} V\tdrawing {} mA",
-            min_19v_centivolts / 100,
-            min_19v_centivolts % 100,
-            v19v_cv / 100,
-            v19v_cv % 100,
-            max_19v_centivolts / 100,
-            max_19v_centivolts % 100,
-            cpwrdata.i19v_milliamps
-        );
-        defmt::println!("+19V temperature\t{} degrees C", cpwrdata.t19v_celsius);
-        defmt::println!("+5V temperature\t{} degrees C", cpwrdata.t5v_celsius);
-        let vbus_sample = adc4.convert(&vbus_sense, SampleTime::Cycles_640_5) as u32;
-        const VBUS_DIVIDER_DENOM: u32 = 23; // 10k - 220k divider
-        defmt::println!("VBUS = {} mV", vbus_sample * 3200 * VBUS_DIVIDER_DENOM / (1 << 12));
-        let ledpwrdata = ext_led_ctrl.tick();
-        defmt::println!("+5V line: curr {}.{:02} V", ledpwrdata.v5v_centivolts / 100, ledpwrdata.v5v_centivolts % 100);
-        defmt::println!("+5V A: {} mA\tB: {} mA", ledpwrdata.ia_milliamps, ledpwrdata.ib_milliamps);
-        defmt::println!("+12V temperature\t{} degrees C", ledpwrdata.t12v_celsius);
+        let mut ledbuf = [YELLOW; 100];
+        rainbow(node.clock().now_const(), &mut ledbuf);
+
+        ext_led_ctrl.ctrl.0.display(&ledbuf);
+        ext_led_ctrl.ctrl.1.display(&ledbuf);
+        ext_led_ctrl.ctrl.2.display(&ledbuf);
+        ext_led_ctrl.ctrl.3.display(&ledbuf);
+    }
+}
+
+fn rainbow(time: Microseconds32, buf: &mut [Colour]) {
+    let length = buf.len();
+
+    for (idx, led) in zip(0..length, buf) {
+        let hue = ((time.ticks() / 5_000) as usize + ((idx * 255) / length)) % 255;
+        *led = hsv2rgb(&HSVal { hue: hue as u8, sat: 255, val: 128 });
+    }
+}
+
+#[derive(Copy, Clone, Default)]
+pub struct HSVal {
+    pub hue: u8,
+    pub sat: u8,
+    pub val: u8,
+}
+
+pub fn hsv2rgb(hsv: &HSVal) -> Colour {
+    let v: u16 = hsv.val as u16;
+    let s: u16 = hsv.sat as u16;
+    let f: u16 = (hsv.hue as u16 * 2 % 85) * 3; // relative interval
+
+    let p: u16 = v * (255 - s) / 255;
+    let q: u16 = v * (255 - (s * f) / 255) / 255;
+    let t: u16 = v * (255 - (s * (255 - f)) / 255) / 255;
+    match hsv.hue {
+        0..=42 => Colour {
+            r: v as u8,
+            g: t as u8,
+            b: p as u8,
+        },
+        43..=84 => Colour {
+            r: q as u8,
+            g: v as u8,
+            b: p as u8,
+        },
+        85..=127 => Colour {
+            r: p as u8,
+            g: v as u8,
+            b: t as u8,
+        },
+        128..=169 => Colour {
+            r: p as u8,
+            g: q as u8,
+            b: v as u8,
+        },
+        170..=212 => Colour {
+            r: t as u8,
+            g: p as u8,
+            b: v as u8,
+        },
+        213..=254 => Colour {
+            r: v as u8,
+            g: p as u8,
+            b: q as u8,
+        },
+        255 => Colour {
+            r: v as u8,
+            g: t as u8,
+            b: p as u8,
+        },
     }
 }
 

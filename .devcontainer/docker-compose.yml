@@ -25,7 +25,6 @@ services:
       # - /dev:/dev
       - ../:${WORKSPACE_DIR}
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
       # Required for ROS 2 shared memory communication
       #- /dev/shm:/dev/shm
     userns_mode: "keep-id:uid=1010,gid=1010"    # Make permissions work for rootless podman (L bozo docker)

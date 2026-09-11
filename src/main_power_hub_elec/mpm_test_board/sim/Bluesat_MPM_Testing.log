@@ -1,0 +1,19 @@
+LTspice 26.0.2 for Windows
+Circuit: C:\Users\harky\Documents\Bluesat\owr\src\main_power_hub_elec\mpm_test_board\sim\Bluesat_MPM_Testing.net
+Start Time: Fri Sep 11 18:47:19 2026
+solver = Normal
+Maximum thread count: 16
+tnom = 27
+temp = 27
+method = trap
+Warning: Pscbe2 = 0 is not positive.
+Direct Newton iteration succeeded in finding operating point.
+Total elapsed time: 4.654 seconds.
+
+Files loaded:
+C:\Users\harky\Documents\Bluesat\owr\src\main_power_hub_elec\mpm_test_board\sim\Bluesat_MPM_Testing.net
+C:\Users\harky\AppData\Local\LTspice\lib\cmp\standard.dio
+C:\Users\harky\AppData\Local\LTspice\lib\cmp\standard.bjt
+C:\Users\harky\Documents\Bluesat\owr\src\main_power_hub_elec\mpm_test_board\sim\irfh7440pbf.spi
+C:\Users\harky\Documents\Bluesat\owr\src\main_power_hub_elec\mpm_test_board\sim\SSM3K333R_PSpice_20131030.lib
+

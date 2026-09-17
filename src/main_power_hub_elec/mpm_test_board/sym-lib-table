@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Bluesat")(type "KiCad")(uri "${KIPRJMOD}/../../elec_common/Bluesat.kicad_sym")(options "")(descr ""))
+  (lib (name "Main_Power_Module")(type "KiCad")(uri "${KIPRJMOD}/../lib/KiCADv6/Main_Power_Module.kicad_sym")(options "")(descr ""))
+)

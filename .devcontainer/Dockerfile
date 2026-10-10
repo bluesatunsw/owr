@@ -3,6 +3,8 @@ ARG USERNAME=dcuser
 ARG UID=1010
 ARG GID=1010
 
+ARG RUST_VERSION=1.99.0
+
 # Create the user
 RUN groupadd --gid $GID $USERNAME
 RUN useradd --uid $UID --gid $GID -m $USERNAME
@@ -52,7 +54,7 @@ RUN apt-get install -y fish neovim
 
 # install toolchain
 RUN curl https://sh.rustup.rs -sSf | \
-    sh -s -- --default-toolchain nightly -y
+    bash -s -- --default-toolchain ${RUST_VERSION} -y
 
 # ********************************************************
 # *                END ROS PAGKAGES                      *

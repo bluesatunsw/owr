@@ -1,5 +1,5 @@
 #include "cyphal_vesc_driver/cyphal_vesc_driver.hpp"
-#include "cyphal_vesc_driver_impl.h"
+#include <string>
 
 namespace cyphal_vesc_driver {
 
@@ -9,27 +9,44 @@ CallbackReturn CyphalVescDriver::on_init(
       CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
+    
+  // Did we get a can bus?
+  if (!params.hardware_info.hardware_parameters.contains("canbus")) {
+      RCLCPP_FATAL(get_logger(), "No CANbus for driver specified!");
+      return CallbackReturn::FAILURE;
+  }
+    
+  // Did we get a cyphal node id?
+  if (!params.hardware_info.hardware_parameters.contains("nodeid")) {
+      RCLCPP_FATAL(get_logger(), "No Cyphal NodeID for driver specified!");
+      return CallbackReturn::FAILURE;
+  }
 
+  // Check that all of the joints have reasonable configs!
   for (auto joint : params.hardware_info.joints) {
     RCLCPP_WARN(get_logger(), "joint: %s", joint.name.c_str());
 
-    if (joint.command_interfaces.size() != 1 ||
-        joint.command_interfaces[0].name != "velocity") {
+
+    if (joint.command_interfaces.size() > 1 || (joint.command_interfaces.size()
+                > 1 && joint.command_interfaces[0].name != "velocity") ||
+            joint.state_interfaces.size() > 1 || (joint.state_interfaces.size()
+                == 1 && joint.state_interfaces[0].name != "velocity")) {
       RCLCPP_FATAL(
           get_logger(),
-          "Wrong command interfaces specified, you may only use velocity!");
+          "Wrong command/state interface specified, you may only use velocity!");
+      return CallbackReturn::FAILURE;
     }
 
-    if (joint.state_interfaces.size() != 1 ||
-        joint.state_interfaces[0].name != "velocity") {
-      RCLCPP_FATAL(
-          get_logger(),
-          "Wrong state interface specified, you may only use velocity!");
-    }
 
     RCLCPP_WARN(get_logger(), "\twith subject_id: %s",
                 joint.command_interfaces[0].parameters["subject_id"].c_str());
   }
+    
+  driver = {BescDriver::create(
+          params.hardware_info.hardware_parameters.at("canbus"), 
+          static_cast<uint8_t>(std::stoi(params.hardware_info.hardware_parameters.at("nodeid"))), 
+          {}
+  )};
 
   RCLCPP_INFO(get_logger(), "Successfully initialized!");
   return CallbackReturn::SUCCESS;

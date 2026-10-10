@@ -31,6 +31,8 @@
     <ros2_control name="VESCControlSystem" type="system">
         <hardware>
             <plugin>cyphal_vesc_driver/CyphalVescDriver</plugin>
+            <param name="canbus">can-all</param>
+            <param name="nodeid">69</param>
         </hardware>
 
         <xacro:ros2control_swerve_drive_iface name="fl" subject_id="3050"/>

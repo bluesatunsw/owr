@@ -1,7 +1,9 @@
 #ifndef CYPHAL_VESC_DRIVER_HPP
 #define CYPHAL_VESC_DRIVER_HPP
 
+#include "cyphal_vesc_driver_impl.h"
 #include "hardware_interface/system_interface.hpp"
+#include <optional>
 
 
 
@@ -16,9 +18,9 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 
 
 class CyphalVescDriver : public hardware_interface::SystemInterface {
+private:
+    std::optional<rust::Box<BescDriver>> driver;
 public:
-  CyphalVescDriver() {}
-
   CallbackReturn on_init(const hardware_interface::HardwareComponentInterfaceParams & params) override;
 
   CallbackReturn on_configure(const rclcpp_lifecycle::State & previous_state) override;

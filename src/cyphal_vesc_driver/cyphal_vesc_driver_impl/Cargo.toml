@@ -19,5 +19,8 @@ socketcan = "3.6.2"
 version = "0.6.0"
 features = ["can-fd"]
 
+[lib]
+crate-type = ["staticlib"]
+
 [build-dependencies]
 cxx-build = "1.0"

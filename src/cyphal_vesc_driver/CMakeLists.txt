@@ -23,10 +23,6 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
 endforeach()
 
 
-
-
-
-
 add_library(cyphal_vesc_driver SHARED
   src/cyphal_vesc_driver.cpp
 )
@@ -35,11 +31,16 @@ target_include_directories(cyphal_vesc_driver PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/cyphal_vesc_driver>
 )
+
+include_directories(${CMAKE_BINARY_DIR}/cyphal_vesc_driver_impl)
+add_subdirectory(cyphal_vesc_driver_impl)
+
 target_link_libraries(cyphal_vesc_driver PUBLIC
   hardware_interface::hardware_interface
   pluginlib::pluginlib
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
+  cyphal_vesc_driver_impl
 )
 
 

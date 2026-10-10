@@ -38,8 +38,6 @@ RUN curl "https://github.com/lichtblick-suite/lichtblick/releases/latest/downloa
     && dpkg -i lichtblick.deb \
     && rm lichtblick.deb
 
-# Python package manager 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # dependency of swerve_drive_controller
 RUN apt-get install ros-jazzy-ros2-control-test-assets 
@@ -52,9 +50,6 @@ RUN echo '* soft rtprio 99\n\
 * hard memlock unlimited' >> /etc/security/limits.conf
 RUN apt-get install -y fish neovim
 
-# install toolchain
-RUN curl https://sh.rustup.rs -sSf | \
-    bash -s -- --default-toolchain ${RUST_VERSION} -y
 
 # ********************************************************
 # *                END ROS PAGKAGES                      *
@@ -67,5 +62,14 @@ RUN echo $USERNAME:U6aMy0wojraho | chpasswd -e
 ENV SHELL /bin/bash
 
 # Set the default user.
+# WARNING! AFTER THIS LINE WE'RE RUNNING AS THE NORMAL USER!
 USER $USERNAME
+
+# Python package manager 
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# install rust toolchain
+RUN curl https://sh.rustup.rs -sSf | \
+    bash -s -- --default-toolchain ${RUST_VERSION} -y
+
 CMD ["/bin/bash"]

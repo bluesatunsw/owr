@@ -1,5 +1,6 @@
 #include "cyphal_vesc_driver/cyphal_vesc_driver.hpp"
-#include "canadensis_cpp/target/cxxbridge/canadensis_cpp/src/lib.rs.h"
+#include "cyphal_vesc_driver_impl.h"
+
 namespace cyphal_vesc_driver {
 
 CallbackReturn CyphalVescDriver::on_init(

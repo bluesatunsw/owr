@@ -35,7 +35,7 @@ target_include_directories(cyphal_vesc_driver PUBLIC
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/cyphal_vesc_driver_impl)
 add_subdirectory(cyphal_vesc_driver_impl)
 
-target_link_libraries(cyphal_vesc_driver PUBLIC
+target_link_libraries(cyphal_vesc_driver PRIVATE cyphal_vesc_driver_impl PUBLIC
   hardware_interface::hardware_interface
   pluginlib::pluginlib
   rclcpp::rclcpp

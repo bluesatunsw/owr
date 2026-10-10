@@ -37,21 +37,12 @@ CallbackReturn CyphalVescDriver::on_init(
 
 CallbackReturn
 CyphalVescDriver::on_configure(const rclcpp_lifecycle::State &previous_state) {
-  for (const &auto [name, desc] : joint_state_interfaces_) {
-    set_state(name, 0.0);
-  }
-  for (const &auto [name, desc] : joint_command_interfaces_) {
-    set_command(name, 0.0);
-  }
   RCLCPP_INFO(get_logger(), "Successfully configured");
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
 CyphalVescDriver::on_activate(const rclcpp_lifecycle::State &previous_state) {
-  for (const &auto [name, desc] : joint_command_interfaces_) {
-    set_command(name, get_state(name));
-  }
   RCLCPP_INFO(get_logger(), "Successfully activated!");
   return CallbackReturn::SUCCESS;
 }
@@ -62,18 +53,6 @@ CyphalVescDriver::on_deactivate(const rclcpp_lifecycle::State &previous_state) {
   // readiness)
   RCLCPP_INFO(get_logger(), "Successfully deactivated!");
   return CallbackReturn::SUCCESS;
-}
-
-hardware_interface::return_type CyphalVescDriver::export_command_interfaces() {
-  commands = hardware_interface::HardwareComponentInterface::
-      on_export_command_interfaces();
-  return hardware_interface::return_type::OK;
-}
-
-hardware_interface::return_type CyphalVescDriver::export_state_interfaces() {
-  states = hardware_interface::HardwareComponentInterface::
-      on_export_state_interfaces();
-  return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type

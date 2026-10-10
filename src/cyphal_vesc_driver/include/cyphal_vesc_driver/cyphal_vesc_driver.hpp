@@ -16,9 +16,6 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 
 
 class CyphalVescDriver : public hardware_interface::SystemInterface {
-private:
-  std::vector<CommandInterface> commands;
-  std::vector<StateInterface> states;
 public:
   CyphalVescDriver() {}
 

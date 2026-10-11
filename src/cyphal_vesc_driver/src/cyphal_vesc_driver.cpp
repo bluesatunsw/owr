@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <hardware_interface/hardware_info.hpp>
 #include <optional>
+#include <rclcpp/logging.hpp>
 #include <string>
 
 namespace cyphal_vesc_driver {
@@ -47,9 +48,11 @@ CallbackReturn CyphalVescDriver::on_init(
         joint.parameters.at("device_id")
     ))};
 
+    auto invert{joint.parameters.at("invert") == "True"};
+
     configs.push_back(NamedBescConfig {
         .name = joint.name,
-        .config = BescConfig { .id = device_id }
+        .config = BescConfig { .id = device_id, .invert = invert }
     });
 
     RCLCPP_WARN(get_logger(), "\twith device_id: %d", device_id);

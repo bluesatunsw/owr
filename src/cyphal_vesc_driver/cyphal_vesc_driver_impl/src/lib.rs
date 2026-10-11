@@ -11,6 +11,7 @@ use canadensis_can::{CanNodeId, CanReceiver, CanTransmitter, CanTransport, Mtu};
 use canadensis_data_types::reg::udral::service::actuator::common::sp::scalar_0_1::Scalar;
 
 use std::collections::BTreeMap;
+use std::println;
 use std::time::{Duration, Instant};
 use std::vec::Vec;
 
@@ -52,6 +53,7 @@ mod ffi {
     #[derive(Debug, Clone)]
     struct BescConfig {
         id: u16,
+        invert: bool,
     }
 
     #[derive(Debug, Clone)]
@@ -218,7 +220,9 @@ impl BescDriver {
                 .publish(
                     SubjectId::from_truncating(config.id),
                     &Scalar {
-                        value: half::f16::from_f64(cmd.target_velocity),
+                        value: half::f16::from_f64(
+                            cmd.target_velocity * (if config.invert { -1.0 } else { 1.0 }),
+                        ),
                     },
                 )
                 .unwrap();

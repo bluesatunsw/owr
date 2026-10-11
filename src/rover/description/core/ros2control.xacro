@@ -49,6 +49,13 @@
         <xacro:ros2control_swerve_turn_iface name="fr" device_id="3010"/>
         <xacro:ros2control_swerve_turn_iface name="bl" device_id="3020"/>
         <xacro:ros2control_swerve_turn_iface name="br" device_id="3030"/>
+    </ros2_control>
+
+    <ros2_control name="MockComponents" type="system">
+        <hardware>
+            <plugin>mock_components/GenericSystem</plugin>
+        </hardware>
+
         <xacro:ros2control_drivebase_suspension_pivot side="l"/>
         <xacro:ros2control_drivebase_suspension_pivot side="r"/>
     </ros2_control>

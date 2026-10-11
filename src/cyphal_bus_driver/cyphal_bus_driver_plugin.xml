@@ -1,0 +1,9 @@
+<library path="cyphal_bus_driver">
+  <class name="cyphal_bus_driver/CyphalBusDriver"
+         type="cyphal_bus_driver::CyphalBusDriver"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Interfaces with various OWR Bluesat devices via cyphal.
+    </description>
+  </class>
+</library>

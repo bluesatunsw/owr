@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(cyphal_vesc_driver LANGUAGES CXX)
+project(cyphal_bus_driver LANGUAGES CXX)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(
@@ -23,19 +23,19 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
 endforeach()
 
 
-add_library(cyphal_vesc_driver SHARED
-  src/cyphal_vesc_driver.cpp
+add_library(cyphal_bus_driver SHARED
+  src/cyphal_bus_driver.cpp
 )
-target_compile_features(cyphal_vesc_driver PUBLIC cxx_std_23)
-target_include_directories(cyphal_vesc_driver PUBLIC
+target_compile_features(cyphal_bus_driver PUBLIC cxx_std_23)
+target_include_directories(cyphal_bus_driver PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include/cyphal_vesc_driver>
+  $<INSTALL_INTERFACE:include/cyphal_bus_driver>
 )
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/cyphal_vesc_driver_impl)
-add_subdirectory(cyphal_vesc_driver_impl)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/cyphal_bus_driver_rs)
+add_subdirectory(cyphal_bus_driver_rs)
 
-target_link_libraries(cyphal_vesc_driver PRIVATE cyphal_vesc_driver_impl PUBLIC
+target_link_libraries(cyphal_bus_driver PRIVATE cyphal_bus_driver_rs PUBLIC
   hardware_interface::hardware_interface
   pluginlib::pluginlib
   rclcpp::rclcpp
@@ -47,15 +47,15 @@ target_link_libraries(cyphal_vesc_driver PRIVATE cyphal_vesc_driver_impl PUBLIC
 
 
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface cyphal_vesc_driver_plugin.xml)
+pluginlib_export_plugin_description_file(hardware_interface cyphal_bus_driver_plugin.xml)
 
 # INSTALL
 install(
   DIRECTORY include/
-  DESTINATION include/cyphal_vesc_driver
+  DESTINATION include/cyphal_bus_driver
 )
-install(TARGETS cyphal_vesc_driver
-  EXPORT export_cyphal_vesc_driver
+install(TARGETS cyphal_bus_driver
+  EXPORT export_cyphal_bus_driver
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -77,6 +77,6 @@ endif()
 
 
 
-ament_export_targets(export_cyphal_vesc_driver HAS_LIBRARY_TARGET)
+ament_export_targets(export_cyphal_bus_driver HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

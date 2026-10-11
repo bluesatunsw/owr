@@ -1,5 +1,5 @@
 [package]
-name = "cyphal_vesc_driver_impl"
+name = "cyphal_bus_driver_rs"
 version = "0.1.0"
 edition = "2021"
 

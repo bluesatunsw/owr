@@ -1,14 +1,14 @@
-#include "cyphal_vesc_driver/cyphal_vesc_driver.hpp"
-#include "cyphal_vesc_driver_impl.h"
+#include "cyphal_bus_driver/cyphal_bus_driver.hpp"
+#include "cyphal_bus_driver_impl.h"
 #include <cstdint>
 #include <hardware_interface/hardware_info.hpp>
 #include <optional>
 #include <rclcpp/logging.hpp>
 #include <string>
 
-namespace cyphal_vesc_driver {
+namespace cyphal_bus_driver {
 
-CallbackReturn CyphalVescDriver::on_init(
+CallbackReturn CyphalBusDriver::on_init(
     const hardware_interface::HardwareComponentInterfaceParams &params) {
   if (hardware_interface::SystemInterface::on_init(params) !=
       CallbackReturn::SUCCESS) {
@@ -65,7 +65,7 @@ CallbackReturn CyphalVescDriver::on_init(
 }
 
 CallbackReturn
-CyphalVescDriver::on_activate(const rclcpp_lifecycle::State &previous_state) {
+CyphalBusDriver::on_activate(const rclcpp_lifecycle::State &previous_state) {
   (*driver)->activate();
 
   RCLCPP_INFO(get_logger(), "Successfully activated!");
@@ -73,7 +73,7 @@ CyphalVescDriver::on_activate(const rclcpp_lifecycle::State &previous_state) {
 }
 
 CallbackReturn
-CyphalVescDriver::on_deactivate(const rclcpp_lifecycle::State &previous_state) {
+CyphalBusDriver::on_deactivate(const rclcpp_lifecycle::State &previous_state) {
   (*driver)->deactivate();
 
   // TODO: later deassert UDRAL
@@ -82,7 +82,7 @@ CyphalVescDriver::on_deactivate(const rclcpp_lifecycle::State &previous_state) {
 }
 
 CallbackReturn
-CyphalVescDriver::on_shutdown(const rclcpp_lifecycle::State &previous_state) {
+CyphalBusDriver::on_shutdown(const rclcpp_lifecycle::State &previous_state) {
   BescDriver::destroy(std::move(*driver));
   driver = std::nullopt;
 
@@ -91,7 +91,7 @@ CyphalVescDriver::on_shutdown(const rclcpp_lifecycle::State &previous_state) {
 }
 
 hardware_interface::return_type
-CyphalVescDriver::read(const rclcpp::Time & /* time */,
+CyphalBusDriver::read(const rclcpp::Time & /* time */,
                        const rclcpp::Duration & /* period */) {
   for (auto& res : (*driver)->read()) {
       set_state(std::string(res.device_name) + "/velocity", res.measured_velocity);
@@ -101,7 +101,7 @@ CyphalVescDriver::read(const rclcpp::Time & /* time */,
 }
 
 hardware_interface::return_type
-CyphalVescDriver::write(const rclcpp::Time &time,
+CyphalBusDriver::write(const rclcpp::Time &time,
                         const rclcpp::Duration &period) {  
   rust::Vec<BescCommands> commands{};
   for (auto& joint : info_.joints) {
@@ -114,8 +114,8 @@ CyphalVescDriver::write(const rclcpp::Time &time,
 
   return hardware_interface::return_type::OK;
 }
-} // namespace cyphal_vesc_driver
+} // namespace cyphal_bus_driver
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(cyphal_vesc_driver::CyphalVescDriver,
+PLUGINLIB_EXPORT_CLASS(cyphal_bus_driver::CyphalBusDriver,
                        hardware_interface::SystemInterface)

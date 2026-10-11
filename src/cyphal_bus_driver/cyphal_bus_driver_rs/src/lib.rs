@@ -3,7 +3,7 @@ use canadensis_data_types::reg::udral::physics::{dynamics, kinematics};
 use canadensis_data_types::uavcan::si::unit::{
     angle, angular_acceleration, angular_velocity, torque,
 };
-use socketcan::{CanSocket, Socket};
+use socketcan::{CanFdSocket, CanSocket, Socket};
 
 use canadensis::core::time::MicrosecondDuration32;
 use canadensis::core::{Priority, SubjectId};
@@ -41,7 +41,7 @@ const PUBLISHERS: usize = 16;
 // In theory we don't have any of these
 const REQUESTERS: usize = 16;
 
-type FdCanQueue = SingleQueueDriver<SystemClock, ArrayQueue<QUEUE_CAPACITY>, LinuxCan<CanSocket>>;
+type FdCanQueue = SingleQueueDriver<SystemClock, ArrayQueue<QUEUE_CAPACITY>, LinuxCan<CanFdSocket>>;
 type ClassicCanQueue =
     SingleQueueDriver<SystemClock, ArrayQueue<QUEUE_CAPACITY>, LinuxCan<CanSocket>>;
 
@@ -170,7 +170,7 @@ impl BusDriver {
         /**********/
         /* FD CAN */
         /**********/
-        let fd_can = CanSocket::open(&can_interface).expect("Failed to open CAN interface");
+        let fd_can = CanFdSocket::open(&can_interface).expect("Failed to open CAN interface");
         fd_can
             .set_read_timeout(Duration::from_millis(100))
             .expect("Failed to set read timeout");

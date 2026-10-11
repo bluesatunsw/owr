@@ -1,5 +1,5 @@
 #include "cyphal_bus_driver/cyphal_bus_driver.hpp"
-#include "cyphal_bus_driver_impl.h"
+#include "cyphal_bus_driver_rs.h"
 #include <cstdint>
 #include <hardware_interface/hardware_info.hpp>
 #include <optional>
@@ -32,33 +32,48 @@ CallbackReturn CyphalBusDriver::on_init(
   ))};
 
   // Check that all of the joints have reasonable configs!
-  rust::Vec<NamedBescConfig> configs{};
+  rust::Vec<NamedBescConfig> besc_configs{};
+  rust::Vec<NamedStepperConfig> stepper_configs{};
   for (auto joint : params.hardware_info.joints) {
     RCLCPP_WARN(get_logger(), "joint: %s", joint.name.c_str());
 
-    if (joint.command_interfaces.size() !=  1 || joint.command_interfaces[0].name != "velocity" ||
-            joint.state_interfaces.size() != 1 || joint.state_interfaces[0].name != "velocity") {
-      RCLCPP_FATAL(
-          get_logger(),
-          "Wrong command/state interface specified, you may only use velocity!");
-      return CallbackReturn::ERROR;
-    }
 
     auto device_id{static_cast<uint16_t>(std::stoi(
         joint.parameters.at("device_id")
     ))};
 
-    auto invert{joint.parameters.at("invert") == "True"};
+    if (joint.parameters.at("type") == "besc") {
+        auto invert{joint.parameters.at("invert") == "True"};
 
-    configs.push_back(NamedBescConfig {
-        .name = joint.name,
-        .config = BescConfig { .id = device_id, .invert = invert }
-    });
+        besc_configs.push_back(NamedBescConfig {
+            .name = joint.name,
+            .config = BescConfig { .id = device_id, .invert = invert }
+        });
+        if (joint.command_interfaces.size() !=  1 || joint.command_interfaces[0].name != "velocity" ||
+            joint.state_interfaces.size() != 1 || joint.state_interfaces[0].name != "velocity") {
+            RCLCPP_FATAL(
+                get_logger(),
+                "Wrong command/state interface specified, you may only use velocity!");
+      return CallbackReturn::ERROR;
+    }
+    } else if (joint.parameters.at("type") == "besc") {
+        stepper_configs.push_back(NamedStepperConfig {
+            .name = joint.name,
+            .config = StepperConfig { .id = device_id }
+        });
+        if (joint.command_interfaces.size() !=  1 || joint.command_interfaces[0].name != "position" ||
+            joint.state_interfaces.size() != 1 || joint.state_interfaces[0].name != "position") {
+            RCLCPP_FATAL(
+                get_logger(),
+                "Wrong command/state interface specified, you may only use position!");
+            return CallbackReturn::ERROR;
+        }
+    }
 
     RCLCPP_WARN(get_logger(), "\twith device_id: %d", device_id);
   }
     
-  driver = {BescDriver::create(can_bus, node_id, configs)};
+  driver = {BusDriver::create(can_bus, node_id, besc_configs, stepper_configs)};
 
   RCLCPP_INFO(get_logger(), "Successfully initialized!");
   return CallbackReturn::SUCCESS;
@@ -83,7 +98,7 @@ CyphalBusDriver::on_deactivate(const rclcpp_lifecycle::State &previous_state) {
 
 CallbackReturn
 CyphalBusDriver::on_shutdown(const rclcpp_lifecycle::State &previous_state) {
-  BescDriver::destroy(std::move(*driver));
+  BusDriver::destroy(std::move(*driver));
   driver = std::nullopt;
 
   RCLCPP_INFO(get_logger(), "Successfully shutdown!");
@@ -93,8 +108,12 @@ CyphalBusDriver::on_shutdown(const rclcpp_lifecycle::State &previous_state) {
 hardware_interface::return_type
 CyphalBusDriver::read(const rclcpp::Time & /* time */,
                        const rclcpp::Duration & /* period */) {
-  for (auto& res : (*driver)->read()) {
-      set_state(std::string(res.device_name) + "/velocity", res.measured_velocity);
+  auto res{(*driver)->read()};
+  for (auto& besc : res.bescs) {
+      set_state(std::string(besc.device_name) + "/velocity", besc.measured_velocity);
+  }
+  for (auto& stepper : res.steppers) {
+      set_state(std::string(stepper.device_name) + "/position", stepper.measured_position);
   }
 
   return hardware_interface::return_type::OK;
@@ -103,14 +122,23 @@ CyphalBusDriver::read(const rclcpp::Time & /* time */,
 hardware_interface::return_type
 CyphalBusDriver::write(const rclcpp::Time &time,
                         const rclcpp::Duration &period) {  
-  rust::Vec<BescCommands> commands{};
+  rust::Vec<BescCommand> besc_commands{};
+  rust::Vec<StepperCommand> stepper_commands{};
+
   for (auto& joint : info_.joints) {
-      commands.push_back(BescCommands {
-        .device_name = joint.name,
-        .target_velocity = get_command(joint.name + "/velocity"),
-      });
+      if (joint.parameters.at("type") == "besc") {
+        besc_commands.push_back(BescCommand {
+            .device_name = joint.name,
+            .target_velocity = get_command(joint.name + "/velocity"),
+        });
+      } else if (joint.parameters.at("type") == "stepper") {
+        stepper_commands.push_back(StepperCommand {
+            .device_name = joint.name,
+            .target_position = get_command(joint.name + "/position"),
+        });
+      }
   }
-  (*driver)->write(commands);
+  (*driver)->write(besc_commands, stepper_commands);
 
   return hardware_interface::return_type::OK;
 }

@@ -1,9 +1,0 @@
-<library path="cyphal_vesc_driver">
-  <class name="cyphal_vesc_driver/CyphalVescDriver"
-         type="cyphal_vesc_driver::CyphalVescDriver"
-         base_class_type="hardware_interface::SystemInterface">
-    <description>
-      Implements velocity (duty cycle only at the moment) publishing to a UDRAL setpoint topic.
-    </description>
-  </class>
-</library>

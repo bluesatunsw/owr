@@ -1,22 +1,28 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <!-- Specify the joints that are in a single swerve module, limits are specified in joint declaration! -->
-    <xacro:macro name="ros2control_swerve_drive_iface" params="name subject_id">
+    <xacro:macro name="ros2control_swerve_drive_iface" params="name device_id invert">
         <joint name="db_${name}_fork_tyre_joint">
+            <param name="device_id">${device_id}</param>
+            <param name="invert">${invert}</param>
+            <param name="type">besc</param>
             <command_interface name="velocity">
                 <limits enable="true"/>
-                <param name="subject_id">${subject_id}</param>
             </command_interface>
+            <state_interface name="velocity"/>
         </joint>
 
     </xacro:macro>
     
 
-    <xacro:macro name="ros2control_swerve_turn_iface" params="name subject_id">
+    <xacro:macro name="ros2control_swerve_turn_iface" params="name device_id">
         <joint name="db_${name}_smount_fork_joint">
+            <param name="device_id">${device_id}</param>
+            <param name="type">stepper</param>
             <command_interface name="position">
                 <limits enable="true"/>
             </command_interface>
+            <state_interface name="position"/>
         </joint>
     </xacro:macro>
 
@@ -28,26 +34,29 @@
     </xacro:macro>
 
 
-    <ros2_control name="VESCControlSystem" type="system">
+    <ros2_control name="CoreControlSystem" type="system">
         <hardware>
-            <plugin>cyphal_vesc_driver/CyphalVescDriver</plugin>
+            <plugin>cyphal_bus_driver/CyphalBusDriver</plugin>
+            <param name="can_bus">can-all</param>
+            <param name="node_id">69</param>
         </hardware>
 
-        <xacro:ros2control_swerve_drive_iface name="fl" subject_id="3050"/>
-        <xacro:ros2control_swerve_drive_iface name="fr" subject_id="3060"/>
-        <xacro:ros2control_swerve_drive_iface name="bl" subject_id="3070"/>
-        <xacro:ros2control_swerve_drive_iface name="br" subject_id="3080"/>
+        <xacro:ros2control_swerve_drive_iface name="fl" device_id="3050" invert="false"/>
+        <xacro:ros2control_swerve_drive_iface name="fr" device_id="3060" invert="true"/>
+        <xacro:ros2control_swerve_drive_iface name="bl" device_id="3070" invert="false"/>
+        <xacro:ros2control_swerve_drive_iface name="br" device_id="3080" invert="true"/>
+
+        <xacro:ros2control_swerve_turn_iface name="fl" device_id="3000"/>
+        <xacro:ros2control_swerve_turn_iface name="fr" device_id="3010"/>
+        <xacro:ros2control_swerve_turn_iface name="bl" device_id="3020"/>
+        <xacro:ros2control_swerve_turn_iface name="br" device_id="3030"/>
     </ros2_control>
-    
+
     <ros2_control name="MockComponents" type="system">
         <hardware>
             <plugin>mock_components/GenericSystem</plugin>
         </hardware>
 
-        <xacro:ros2control_swerve_turn_iface name="fl" subject_id="3000"/>
-        <xacro:ros2control_swerve_turn_iface name="fr" subject_id="3010"/>
-        <xacro:ros2control_swerve_turn_iface name="bl" subject_id="3020"/>
-        <xacro:ros2control_swerve_turn_iface name="br" subject_id="3030"/>
         <xacro:ros2control_drivebase_suspension_pivot side="l"/>
         <xacro:ros2control_drivebase_suspension_pivot side="r"/>
     </ros2_control>

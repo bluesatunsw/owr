@@ -22,6 +22,7 @@
             <command_interface name="position">
                 <limits enable="true"/>
             </command_interface>
+            <state_interface name="position"/>
         </joint>
     </xacro:macro>
 

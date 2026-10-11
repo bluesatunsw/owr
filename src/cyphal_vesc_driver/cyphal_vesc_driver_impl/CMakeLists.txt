@@ -19,6 +19,7 @@ add_custom_command(
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/cyphal_vesc_driver_impl/src/lib.rs.cc  ${RUST_PART_CXX}
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/cyphal_vesc_driver_impl/src/lib.rs.h   ${CMAKE_CURRENT_BINARY_DIR}/cyphal_vesc_driver_impl.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/lib.rs
 )
 
 target_link_libraries(cyphal_vesc_driver_impl ${RUST_PART_LIB})

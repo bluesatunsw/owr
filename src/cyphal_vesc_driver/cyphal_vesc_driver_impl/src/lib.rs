@@ -1,5 +1,5 @@
-use canadensis::Node;
-use socketcan::{id, CanFdSocket, Socket};
+use canadensis::{Node, TransferHandler};
+use socketcan::{CanSocket, Socket};
 
 use canadensis::core::time::MicrosecondDuration32;
 use canadensis::core::{Priority, SubjectId};
@@ -34,14 +34,14 @@ const PUBLISHERS: usize = 16;
 // In theory we don't have any of these
 const REQUESTERS: usize = 16;
 
-type FDQueue = SingleQueueDriver<SystemClock, ArrayQueue<QUEUE_CAPACITY>, LinuxCan<CanFdSocket>>;
+type CanQueue = SingleQueueDriver<SystemClock, ArrayQueue<QUEUE_CAPACITY>, LinuxCan<CanSocket>>;
 
 type BescCoreNode = CoreNode<
     SystemClock,
-    CanTransmitter<SystemClock, FDQueue>,
-    CanReceiver<SystemClock, FDQueue>,
+    CanTransmitter<SystemClock, CanQueue>,
+    CanReceiver<SystemClock, CanQueue>,
     TransferIdFixedMap<CanTransport, TRANSFER_IDS>,
-    FDQueue,
+    CanQueue,
     PUBLISHERS,
     REQUESTERS,
 >;
@@ -63,13 +63,13 @@ mod ffi {
     #[derive(Debug, Clone)]
     struct BescState {
         device_name: String,
-        measured_velocity: f32,
+        measured_velocity: f64,
     }
 
     #[derive(Debug, Clone)]
     struct BescCommands {
         device_name: String,
-        target_velocity: f32,
+        target_velocity: f64,
     }
 
     extern "Rust" {
@@ -94,9 +94,8 @@ mod ffi {
 
 struct BescDriver {
     cyphal_node: BescCyphalNode,
-    bescs: BTreeMap<String, BescConfig>,
+    bescs: BTreeMap<String, (BescConfig, BescState)>,
     heartbeat_time: Instant,
-    fake_states: Vec<BescState>,
 }
 
 impl BescDriver {
@@ -105,7 +104,7 @@ impl BescDriver {
         gateway_id: u8,
         bescs: Vec<NamedBescConfig>,
     ) -> Box<BescDriver> {
-        let can = CanFdSocket::open(&can_interface).expect("Failed to open CAN interface");
+        let can = CanSocket::open(&can_interface).expect("Failed to open CAN interface");
         can.set_read_timeout(Duration::from_millis(100))
             .expect("Failed to set read timeout");
         can.set_write_timeout(Duration::from_millis(100))
@@ -113,7 +112,7 @@ impl BescDriver {
 
         let linux_can = LinuxCan::new(can);
 
-        let transmitter = CanTransmitter::new(Mtu::CanFd64);
+        let transmitter = CanTransmitter::new(Mtu::Can8);
         let node_id = CanNodeId::try_from(gateway_id).unwrap();
         let receiver = CanReceiver::new(node_id);
 
@@ -128,40 +127,55 @@ impl BescDriver {
             certificate_of_authenticity: Default::default(),
         };
 
-        let queue_driver: FDQueue = SingleQueueDriver::new(ArrayQueue::new(), linux_can);
+        let queue_driver: CanQueue = SingleQueueDriver::new(ArrayQueue::new(), linux_can);
 
-        let mut node: BescCoreNode = CoreNode::new(
-            SystemClock::new(),
-            node_id,
-            transmitter,
-            receiver,
-            queue_driver,
-        );
+        let mut cyphal_node = BasicNode::new(
+            CoreNode::new(
+                SystemClock::new(),
+                node_id,
+                transmitter,
+                receiver,
+                queue_driver,
+            ),
+            cyphal_node_info,
+        )
+        .unwrap();
 
         for besc in &bescs {
-            node.start_publishing(
-                SubjectId::from_truncating(besc.config.id),
-                MicrosecondDuration32::millis(1_000),
-                Priority::Nominal,
-            )
-            .unwrap();
+            cyphal_node
+                .start_publishing(
+                    SubjectId::from_truncating(besc.config.id),
+                    MicrosecondDuration32::millis(1_000),
+                    Priority::Nominal,
+                )
+                .unwrap();
         }
 
         let mut driver = BescDriver {
-            cyphal_node: BasicNode::new(node, cyphal_node_info).unwrap(),
+            cyphal_node: cyphal_node,
             bescs: bescs
                 .iter()
-                .map(|besc| (besc.name.clone(), besc.config.clone()))
+                .map(|besc| {
+                    (
+                        besc.name.clone(),
+                        (
+                            besc.config.clone(),
+                            BescState {
+                                device_name: besc.name.clone(),
+                                measured_velocity: 0.0,
+                            },
+                        ),
+                    )
+                })
                 .collect(),
             heartbeat_time: Instant::now(),
-            fake_states: vec![],
         };
         driver.deactivate();
 
         Box::new(driver)
     }
 
-    pub fn destroy(driver: Box<BescDriver>) {
+    pub fn destroy(_: Box<BescDriver>) {
         // TODO: research cleanup
     }
 
@@ -171,12 +185,12 @@ impl BescDriver {
 
     pub fn deactivate(&mut self) {
         for _ in 0..3 {
-            for (_, config) in &self.bescs {
+            for (_, (config, _)) in &self.bescs {
                 self.cyphal_node
                     .publish(
                         SubjectId::from_truncating(config.id),
                         &Scalar {
-                            value: half::f16::from_f32(0.0),
+                            value: half::f16::from_f64(0.0),
                         },
                     )
                     .unwrap();
@@ -184,48 +198,57 @@ impl BescDriver {
         }
 
         // Hack to make it look like the velocity is zero
-        self.fake_states = self
-            .bescs
-            .iter()
-            .map(|(name, _)| BescState {
-                device_name: name.clone(),
-                measured_velocity: 0.0,
-            })
-            .collect();
+        for (_, (_, state)) in &mut self.bescs {
+            state.measured_velocity = 0.0;
+        }
     }
 
     pub fn read(&mut self) -> Vec<BescState> {
-        self.maybe_heartbeat();
-        self.fake_states.clone()
+        self.update();
+        self.bescs
+            .iter()
+            .map(|(_, (_, state))| state.clone())
+            .collect()
     }
 
     pub fn write(&mut self, commands: Vec<BescCommands>) {
-        self.maybe_heartbeat();
-
         for cmd in &commands {
-            let config = &self.bescs[&cmd.device_name];
+            let (config, state) = self.bescs.get_mut(&cmd.device_name).unwrap();
             self.cyphal_node
                 .publish(
                     SubjectId::from_truncating(config.id),
                     &Scalar {
-                        value: half::f16::from_f32(cmd.target_velocity),
+                        value: half::f16::from_f64(cmd.target_velocity),
                     },
                 )
                 .unwrap();
+
+            // Fake the velocity
+            state.measured_velocity = cmd.target_velocity;
         }
-        self.fake_states = commands
-            .iter()
-            .map(|cmd| BescState {
-                device_name: cmd.device_name.clone(),
-                measured_velocity: cmd.target_velocity,
-            })
-            .collect();
+
+        self.update();
     }
 
-    fn maybe_heartbeat(&mut self) {
+    fn update(&mut self) {
         if Instant::now() >= self.heartbeat_time {
             self.cyphal_node.run_per_second_tasks().unwrap();
             self.heartbeat_time += Duration::from_millis(1000);
         }
+
+        struct Handler<'a> {
+            bescs: &'a mut BTreeMap<String, (BescConfig, BescState)>,
+        }
+        impl<'a> TransferHandler<CanTransport> for Handler<'a> {
+            // TODO: handle incoming messages
+        }
+
+        self.cyphal_node.flush().unwrap();
+        return;
+        self.cyphal_node
+            .receive(&mut Handler {
+                bescs: &mut self.bescs,
+            })
+            .unwrap();
     }
 }

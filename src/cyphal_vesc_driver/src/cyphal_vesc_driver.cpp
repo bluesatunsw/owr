@@ -1,4 +1,8 @@
 #include "cyphal_vesc_driver/cyphal_vesc_driver.hpp"
+#include "cyphal_vesc_driver_impl.h"
+#include <cstdint>
+#include <hardware_interface/hardware_info.hpp>
+#include <optional>
 #include <string>
 
 namespace cyphal_vesc_driver {
@@ -11,84 +15,102 @@ CallbackReturn CyphalVescDriver::on_init(
   }
     
   // Did we get a can bus?
-  if (!params.hardware_info.hardware_parameters.contains("canbus")) {
+  if (!params.hardware_info.hardware_parameters.contains("can_bus")) {
       RCLCPP_FATAL(get_logger(), "No CANbus for driver specified!");
-      return CallbackReturn::FAILURE;
+      return CallbackReturn::ERROR;
   }
+  auto can_bus{params.hardware_info.hardware_parameters.at("can_bus")};
     
   // Did we get a cyphal node id?
-  if (!params.hardware_info.hardware_parameters.contains("nodeid")) {
+  if (!params.hardware_info.hardware_parameters.contains("node_id")) {
       RCLCPP_FATAL(get_logger(), "No Cyphal NodeID for driver specified!");
-      return CallbackReturn::FAILURE;
+      return CallbackReturn::ERROR;
   }
+  auto node_id{static_cast<uint8_t>(std::stoi(
+    params.hardware_info.hardware_parameters.at("node_id")
+  ))};
 
   // Check that all of the joints have reasonable configs!
+  rust::Vec<NamedBescConfig> configs{};
   for (auto joint : params.hardware_info.joints) {
     RCLCPP_WARN(get_logger(), "joint: %s", joint.name.c_str());
 
-
-    if (joint.command_interfaces.size() > 1 || (joint.command_interfaces.size()
-                > 1 && joint.command_interfaces[0].name != "velocity") ||
-            joint.state_interfaces.size() > 1 || (joint.state_interfaces.size()
-                == 1 && joint.state_interfaces[0].name != "velocity")) {
+    if (joint.command_interfaces.size() !=  1 || joint.command_interfaces[0].name != "velocity" ||
+            joint.state_interfaces.size() != 1 || joint.state_interfaces[0].name != "velocity") {
       RCLCPP_FATAL(
           get_logger(),
           "Wrong command/state interface specified, you may only use velocity!");
-      return CallbackReturn::FAILURE;
+      return CallbackReturn::ERROR;
     }
 
+    auto device_id{static_cast<uint16_t>(std::stoi(
+        joint.parameters.at("device_id")
+    ))};
 
-    RCLCPP_WARN(get_logger(), "\twith subject_id: %s",
-                joint.command_interfaces[0].parameters["subject_id"].c_str());
+    configs.push_back(NamedBescConfig {
+        .name = joint.name,
+        .config = BescConfig { .id = device_id }
+    });
+
+    RCLCPP_WARN(get_logger(), "\twith device_id: %d", device_id);
   }
     
-  driver = {BescDriver::create(
-          params.hardware_info.hardware_parameters.at("canbus"), 
-          static_cast<uint8_t>(std::stoi(params.hardware_info.hardware_parameters.at("nodeid"))), 
-          {}
-  )};
+  driver = {BescDriver::create(can_bus, node_id, configs)};
 
   RCLCPP_INFO(get_logger(), "Successfully initialized!");
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
-CyphalVescDriver::on_configure(const rclcpp_lifecycle::State &previous_state) {
-  RCLCPP_INFO(get_logger(), "Successfully configured");
-  return CallbackReturn::SUCCESS;
-}
-
-CallbackReturn
 CyphalVescDriver::on_activate(const rclcpp_lifecycle::State &previous_state) {
+  (*driver)->activate();
+
   RCLCPP_INFO(get_logger(), "Successfully activated!");
   return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn
 CyphalVescDriver::on_deactivate(const rclcpp_lifecycle::State &previous_state) {
-  // TODO: set all the VESC's to 0% duty cycle for now (later deassert UDRAL
-  // readiness)
+  (*driver)->deactivate();
+
+  // TODO: later deassert UDRAL
   RCLCPP_INFO(get_logger(), "Successfully deactivated!");
+  return CallbackReturn::SUCCESS;
+}
+
+CallbackReturn
+CyphalVescDriver::on_shutdown(const rclcpp_lifecycle::State &previous_state) {
+  BescDriver::destroy(std::move(*driver));
+  driver = std::nullopt;
+
+  RCLCPP_INFO(get_logger(), "Successfully shutdown!");
   return CallbackReturn::SUCCESS;
 }
 
 hardware_interface::return_type
 CyphalVescDriver::read(const rclcpp::Time & /* time */,
                        const rclcpp::Duration & /* period */) {
-  // TODO: We aren't reading anything from the CANbus at this point
-  //
-  // We probably *should* be seeing whether node heartbeats are transferred to
-  // check whether they exist
+  for (auto& res : (*driver)->read()) {
+      set_state(std::string(res.device_name) + "/velocity", res.measured_velocity);
+  }
 
   return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type
 CyphalVescDriver::write(const rclcpp::Time &time,
-                        const rclcpp::Duration &period) {
+                        const rclcpp::Duration &period) {  
+  rust::Vec<BescCommands> commands{};
+  for (auto& joint : info_.joints) {
+      commands.push_back(BescCommands {
+        .device_name = joint.name,
+        .target_velocity = get_command(joint.name + "/velocity"),
+      });
+  }
+  (*driver)->write(commands);
+
   return hardware_interface::return_type::OK;
 }
-
 } // namespace cyphal_vesc_driver
 
 #include "pluginlib/class_list_macros.hpp"

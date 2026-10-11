@@ -38,7 +38,6 @@ RUN curl "https://github.com/lichtblick-suite/lichtblick/releases/latest/downloa
     && dpkg -i lichtblick.deb \
     && rm lichtblick.deb
 
-
 # dependency of swerve_drive_controller
 RUN apt-get install ros-jazzy-ros2-control-test-assets 
 

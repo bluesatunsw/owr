@@ -54,9 +54,9 @@ CallbackReturn CyphalBusDriver::on_init(
             RCLCPP_FATAL(
                 get_logger(),
                 "Wrong command/state interface specified, you may only use velocity!");
-      return CallbackReturn::ERROR;
-    }
-    } else if (joint.parameters.at("type") == "besc") {
+            return CallbackReturn::ERROR;
+        }
+    } else if (joint.parameters.at("type") == "stepper") {
         stepper_configs.push_back(NamedStepperConfig {
             .name = joint.name,
             .config = StepperConfig { .id = device_id }

@@ -382,7 +382,7 @@ impl BusDriver {
         }
 
         for cmd in &stepper_commands {
-            let (config, state) = self.steppers.get_mut(&cmd.device_name).unwrap();
+            let (config, _) = self.steppers.get_mut(&cmd.device_name).unwrap();
             self.fd_node
                 .publish(
                     SubjectId::from_truncating(config.id),

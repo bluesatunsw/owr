@@ -1,0 +1,51 @@
+[package]
+authors = ["Aavin Fernando", "Jonah Hopkin <jonahhopkin@gmail.com>"]
+edition = "2018"
+readme = "README.md"
+name = "besc_firmware"
+version = "0.0.1"
+
+[dependencies]
+cortex-m-rt = "0.7.5"
+cortex-m-semihosting = "0.5.0"
+panic-semihosting = "0.6.0" # NOTE: change to different panic once not in development environment
+canadensis = "0.5.0"
+canadensis_data_types = "0.5.0"
+heapless = "0.9.1"
+embedded-alloc = "0.7.0"
+embedded-io = "0.7.1"
+bitfield = "0.19.4"
+stm32g4 = { version = "0.16.0", features = ["rt", "stm32g474"] } # needed for dprintln macro
+half = { version = "2.7.1", default-features = false }
+micromath = "2.1.0"
+
+[dependencies.stm32g4xx-hal]
+version = "0.0.2"
+# the official Rust HAL on GitHub does not have support for ADC injected channels
+# nor do we yet lmao
+git = "https://github.com/bluesatunsw/stm32g4xx-hal"
+branch = "qspi"
+features = ["stm32g474", "rt", "can"] 
+
+[dependencies.cortex-m]
+version = "0.7.7"
+features = ["critical-section-single-core"]
+
+[dependencies.canadensis_can]
+version = "0.5.1"
+features = ["can-fd"]
+
+[dependencies.embedded_common]
+path = "../embedded_common"
+features = ["dprintln-enabled"]
+
+# allows use of `cargo fix`
+[[bin]]
+name = "besc_firmware"
+test = false
+bench = false
+
+[profile.release]
+codegen-units = 1 # better optimizations
+debug = true # symbols are nice and they don't increase the size on Flash
+lto = true # better optimizations

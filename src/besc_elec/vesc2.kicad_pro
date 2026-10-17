@@ -178,6 +178,7 @@
         {
           "td_allow_use_two_tracks": true,
           "td_curve_segcount": 0,
+          "td_enabled": false,
           "td_height_ratio": 1.0,
           "td_length_ratio": 0.5,
           "td_maxheight": 2.0,
@@ -189,6 +190,7 @@
         {
           "td_allow_use_two_tracks": true,
           "td_curve_segcount": 0,
+          "td_enabled": false,
           "td_height_ratio": 1.0,
           "td_length_ratio": 0.5,
           "td_maxheight": 2.0,
@@ -200,6 +202,7 @@
         {
           "td_allow_use_two_tracks": true,
           "td_curve_segcount": 0,
+          "td_enabled": false,
           "td_height_ratio": 1.0,
           "td_length_ratio": 0.5,
           "td_maxheight": 2.0,
@@ -487,6 +490,7 @@
       "pin_to_pin": "warning",
       "power_pin_not_driven": "error",
       "same_local_global_label": "warning",
+      "same_local_global_power": "warning",
       "similar_label_and_power": "warning",
       "similar_labels": "warning",
       "similar_power": "warning",
@@ -539,8 +543,8 @@
     "meta": {
       "version": 5
     },
-    "net_colors": null,
-    "netclass_assignments": null,
+    "net_colors": {},
+    "netclass_assignments": {},
     "netclass_patterns": []
   },
   "pcbnew": {
@@ -637,6 +641,24 @@
           "label": "#",
           "name": "${ITEM_NUMBER}",
           "show": false
+        },
+        {
+          "group_by": false,
+          "label": "LCSC Part",
+          "name": "LCSC Part",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MPN",
+          "name": "MPN",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Manufacturer",
+          "name": "Manufacturer",
+          "show": false
         }
       ],
       "filter_string": "",
@@ -695,7 +717,7 @@
         "uuid": "2059a583-03d9-42e7-b042-844898d8f177"
       }
     ],
-    "used_designators": "U1,U220,L202,L221,L250,D202,D220-221,#PWR2-21,#PWR157,#PWR206-211,#PWR214,#PWR218,#PWR225-235,#PWR304-306,C1-11,C219-220,C222,C224-225,C227,C230,C250,#FLG202,#FLG204-205,R1-8,R220-222,R308-310",
+    "used_designators": "#FLG202,#FLG204-205,#PWR2-21,#PWR157-158,#PWR206-211,#PWR214,#PWR218,#PWR225-238,#PWR304-306,C1-11,C214-217,C219-220,C222,C224-225,C227,C230,C250,D202,D220-221,L202,L221,L250,R1-8,R115-116,R205-206,R209-213,R220-222,R308-310,U1-2,U220",
     "variants": []
   },
   "sheets": [

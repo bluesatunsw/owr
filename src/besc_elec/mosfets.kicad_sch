@@ -2324,11 +2324,11 @@
 					(unit 1)
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "R2")
+					(reference "R409")
 					(unit 1)
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "R3")
+					(reference "R509")
 					(unit 1)
 				)
 			)
@@ -2684,11 +2684,11 @@
 					(unit 1)
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "R5")
+					(reference "R408")
 					(unit 1)
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "R6")
+					(reference "R508")
 					(unit 1)
 				)
 			)
@@ -3140,7 +3140,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cb4b02a1-71ab-4f4e-96b8-fd72400f0bd1")
-		(property "Reference" "C302"
+		(property "Reference" "C304"
 			(at 178.181 107.188 90)
 			(show_name no)
 			(do_not_autoplace yes)
@@ -3204,15 +3204,15 @@
 		(instances
 			(project "vesc2"
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/1b823304-293f-4595-a426-e06902eaf0d9"
-					(reference "C302")
+					(reference "C304")
 					(unit 1)
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "C2")
+					(reference "C404")
 					(unit 1)
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "C3")
+					(reference "C504")
 					(unit 1)
 				)
 			)

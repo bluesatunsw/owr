@@ -43,7 +43,7 @@ impl STM32G4xxSixPwmDriver {
             rcc
         ).frequency(14.kHz())
             .center_aligned()
-            .with_deadtime(298.nanos()) // see README
+            .with_deadtime(1.micros()) // see README
             .finalize();
         motor_disable();
 

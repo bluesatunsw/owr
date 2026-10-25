@@ -1,14 +1,16 @@
 use cortex_m::asm::delay;
 use bitfield::bitfield;
 use stm32g4xx_hal::{
-    gpio::{AF6, Alternate, Input, Output, PC10, PC11, PC12, Pin},
+    gpio::{self, AF6, Alternate, Input, Output, PC10, PC11, PC12, Pin},
     hal::digital::OutputPin,
-    pac::SPI3,
+    pac::{self, SPI3},
     prelude::SpiBus,
     rcc::Rcc,
     spi::{Mode, Phase, Polarity, Spi, SpiExt},
     time::RateExtU32,
 };
+
+use bitbang_hal::spi::{self, SPI, MODE_2};
 
 use embedded_common::dprintln;
 
@@ -73,46 +75,39 @@ impl DRV8301 {
 
     const REG_STAT1: u16 = 0 << 11;
     const REG_STAT2: u16 = 1 << 11;
-    const REG_CTRL1: u16 = 2 << 11;
+
+    // gate current 0.7 A
+    const REG_CTRL1: u16 = 0b0001_0000_0000_0001;
     const REG_CTRL2: u16 = 3 << 11;
 
     pub fn setup(
         mut gate_en: Pin<'B', 5, Output>,
         nfault: Pin<'B', 7, Input>,
         mut spi_ncs: Pin<'A', 15, Output>,
-        spi_clk: Pin<'C', 10, Alternate<6>>,
-        spi_miso: Pin<'C', 11, Alternate<6>>,
-        spi_mosi: Pin<'C', 12, Alternate<6>>,
+        spi_clk: Pin<'C', 10, Output>,
+        spi_miso: Pin<'C', 11, Input>,
+        spi_mosi: Pin<'C', 12, Output>,
         spip: SPI3,
         rcc: &mut Rcc,
     ) -> DRV8301 {
         gate_en.set_low();
-        delay(250_000);
+        delay(25_000_000);
         gate_en.set_high();
-        delay(250_000);
+        delay(25_000_000);
 
-        dprintln!(0, "[INFO] DRV.FAULT present? {}", nfault.is_low());
+        defmt::println!("[INFO] DRV.FAULT present? {}", nfault.is_low());
 
-        let spi_mode = Mode {
-            polarity: Polarity::IdleLow,
-            phase: Phase::CaptureOnSecondTransition,
-        };
+        let tim3 = unsafe { stm32g4xx_hal::pac::TIM3::steal() };
+        let mut spi3 = SPI::new(MODE_2, spi_miso, spi_mosi, spi_clk, tim3);
 
-        let mut spi3 = spip.spi(
-            (spi_clk, spi_miso, spi_mosi),
-            spi_mode,
-            1.MHz(),
-            rcc,
-        );
+        defmt::println!("[INFO] DRV.Basic pin setup done.. Moving on to SPI");
 
-        dprintln!(0, "[INFO] DRV.Basic pin setup done.. Moving on to SPI");
-
-        Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD | Self::REG_STAT1);
+        spi3.send(Self::FLAG_RD | Self::REG_STAT1);
         let mut _rxdata =
             Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD | Self::REG_STAT2);
-        dprintln!(0, "[INFO] DRV.STATUS1 RECV: {:#?}", RegStatus1(_rxdata));
+        defmt::println!("[INFO] DRV.STATUS1 RECV: {:#?}", _rxdata);
         _rxdata = Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD);
-        dprintln!(0, "[INFO] DRV.STATUS2 RECV: {:#?}", RegStatus2(_rxdata));
+        defmt::println!("[INFO] DRV.STATUS2 RECV: {:#?}", _rxdata);
 
         // Disable OCP (leave reporting enabled though) & Use lowest gate drive current
         Self::transfer_internal(
@@ -122,11 +117,11 @@ impl DRV8301 {
         );
         Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD | Self::REG_CTRL1);
         _rxdata = Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD);
-        dprintln!(0, "[INFO] DRV.CTRL1 RECV: {:#?}", RegCtrl1(_rxdata));
+        defmt::println!("[INFO] DRV.CTRL1 RECV: {:#?}", _rxdata);
 
         Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD | Self::REG_CTRL2);
         _rxdata = Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD);
-        dprintln!(0, "[INFO] DRV.CTRL2 RECV: {:#?}", RegCtrl2(_rxdata));
+        defmt::println!("[INFO] DRV.CTRL2 RECV: {:#?}", _rxdata);
 
         DRV8301 {
             pin_spi_ncs: spi_ncs,
@@ -142,21 +137,5 @@ impl DRV8301 {
 
     pub fn transfer(&mut self, data: u16) -> u16 {
         Self::transfer_internal(&mut self.spi, &mut self.pin_spi_ncs, data)
-    }
-
-    fn transfer_internal<E: stm32g4xx_hal::hal::digital::Error>(
-        spi: &mut Spi<SPI3, DRV8301Pins>,
-        ncs: &mut dyn OutputPin<Error = E>,
-        data: u16,
-    ) -> u16 {
-        let mut data: [u8; 2] = data.to_be_bytes();
-
-        let _ = ncs.set_low();
-        delay(100);
-        let _ = spi.transfer_in_place(&mut data);
-        delay(100);
-        let _ = ncs.set_high();
-
-        u16::from_be_bytes([data[0], data[1]])
     }
 }

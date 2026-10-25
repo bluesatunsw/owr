@@ -1,12 +1,13 @@
 [target.thumbv7em-none-eabihf]
 rustflags = [
-    "-C", "opt-level=s", 	# size optimisations are necessary
-    "-C", "panic=abort",
-    "-g",
+  "-C", "opt-level=s", 	# size optimisations are necessary
+  "-C", "linker=flip-link",
+  "-C", "link-arg=-Tlink.x",
+  "-C", "link-arg=-Tdefmt.x",
 ]
 
 [target.'cfg(all(target_arch = "arm", target_os = "none"))']
-runner = "arm-none-eabi-gdb -q -x ../embedded_common/tools/openocd.gdb"
+runner = ["probe-rs", "run", "--chip", "stm32g474rbtx", "--log-format=oneline"]
 
 rustflags = [
   # Previously, the linker arguments --nmagic and -Tlink.x were set here.

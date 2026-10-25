@@ -9,6 +9,7 @@
 use core::convert::TryInto;
 use core::f32::consts;
 use core::intrinsics::breakpoint;
+use core::pin::Pin;
 use core::ptr;
 use core::{cell::UnsafeCell, mem::MaybeUninit};
 
@@ -38,6 +39,7 @@ use embedded_common::{
     dprintln,
 };
 use panic_semihosting as _;
+use defmt_rtt as _;
 
 use stm32g4xx_hal::pac::TIM5;
 use stm32g4xx_hal::{
@@ -161,9 +163,9 @@ fn main() -> ! {
         gpiob.pb5.into_push_pull_output_in_state(PinState::Low),
         gpiob.pb7.into_floating_input(),
         gpioa.pa15.into_push_pull_output_in_state(PinState::High),
-        gpioc.pc10.into_alternate().speed(Speed::VeryHigh),
-        gpioc.pc11.into_alternate().speed(Speed::VeryHigh),
-        gpioc.pc12.into_alternate().speed(Speed::VeryHigh),
+        gpioc.pc10.into_push_pull_output_in_state(PinState::Low),
+        gpioc.pc11.into_floating_input(),
+        gpioc.pc12.into_push_pull_output_in_state(PinState::Low),
         dp.SPI3,
         &mut rcc,
     );
@@ -336,6 +338,14 @@ fn main() -> ! {
     let mut start = node.clock_mut().now();
     let mut argb_phase = true;
     argb.display(&[BLUE, GREEN, RED]);
+    
+    cortex_m::interrupt::free(|cs| unsafe {
+        (*handler.commutation_state.borrow(cs).get()).mode =
+            CommutationMode::DutyCycle {
+                duty: f32::from(0.05),
+            };
+    });
+
     loop {
         if drv.has_fault() {
             motor_disable();
@@ -358,9 +368,9 @@ fn main() -> ! {
             }
         }
 
-        if let Err(_) = node.receive(&mut handler) {
+        /*if let Err(_) = node.receive(&mut handler) {
             dprintln!(0, "[ERR] node.receive failed!");
-        }
+        }*/
     }
 }
 

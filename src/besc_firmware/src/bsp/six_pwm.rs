@@ -43,7 +43,8 @@ impl STM32G4xxSixPwmDriver {
             rcc
         ).frequency(14.kHz())
             .center_aligned()
-            .with_deadtime(1.micros()) // see README
+            // can be changed to 80 ns on the COOL BESC
+            .with_deadtime(300.nanos()) // see README
             .finalize();
         motor_disable();
 

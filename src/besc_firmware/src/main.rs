@@ -337,13 +337,6 @@ fn main() -> ! {
     let mut argb_phase = true;
     argb.display(&[BLUE, GREEN, RED]);
     
-    cortex_m::interrupt::free(|cs| unsafe {
-        (*handler.commutation_state.borrow(cs).get()).mode =
-            CommutationMode::DutyCycle {
-                duty: f32::from(0.05),
-            };
-    });
-
     loop {
         if drv.has_fault() {
             motor_disable();
@@ -366,9 +359,9 @@ fn main() -> ! {
             }
         }
 
-        /*if let Err(_) = node.receive(&mut handler) {
+        if let Err(_) = node.receive(&mut handler) {
             dprintln!(0, "[ERR] node.receive failed!");
-        }*/
+        }
     }
 }
 

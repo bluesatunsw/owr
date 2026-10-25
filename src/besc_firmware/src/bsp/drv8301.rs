@@ -1,11 +1,38 @@
-use cortex_m::{asm::delay, prelude::_embedded_hal_blocking_spi_Transfer};
+use cortex_m::asm::delay;
 use bitfield::bitfield;
 use stm32g4xx_hal::{
-    prelude::*,
     delay::CountDown, gpio::{self, AF6, Alternate, Input, Output, PA15, PC10, PC11, PC12, Pin}, hal::digital::OutputPin, pac::{self, SPI3}, prelude::SpiBus, rcc::Rcc, spi::{Mode, Phase, Polarity, Spi, SpiExt}, time::{ExtU32, RateExtU32}, timer::CountDownTimer,
 };
 
 use bitbang_hal::spi::{self, SPI, MODE_2};
+
+struct JonahSPI {
+    pub spi_ncs: PA15<gpio::Output>,
+    pub spi_clk: Pin<'C', 10, Output>,
+    pub spi_miso: Pin<'C', 12, Input>,
+    pub spi_mosi: Pin<'C', 11, Output>,
+}
+
+/// implements MODE 2
+impl JonahSPI {
+    fn transfer_internal(&mut self, data: u16) -> u16 {
+        self.spi_ncs.set_low();
+        delay(10000);
+        let mut result = 0;
+        for i in (0..16).rev() {
+            let bit = data & (1 << i);
+            self.spi_mosi.set_state((bit != 0).into());
+            self.spi_clk.set_high();
+            delay(10000);
+            result |= (if self.spi_miso.is_high() {1} else {0}) << i;
+            self.spi_clk.set_low();
+            delay(10000);
+        }
+        self.spi_ncs.set_high();
+        delay(10000);
+        result
+    }
+}
 
 bitfield! {
     pub struct RegStatus1(u16);
@@ -58,9 +85,8 @@ type DRV8301Pins = (PC10<AF6>, PC11<AF6>, PC12<AF6>); // SCK, MISO, MOSI
 type BBSPI = SPI<PC12<gpio::Input>, PC11<gpio::Output>, PC10<gpio::Output>, CountDownTimer<stm32g4xx_hal::pac::TIM3>>;
 
 pub struct DRV8301 {
-    pin_spi_ncs: Pin<'A', 15, Output>,
     pin_nfault: Pin<'B', 7, Input>,
-    spi: BBSPI,
+    spi: JonahSPI,
 }
 
 impl DRV8301 {
@@ -70,7 +96,9 @@ impl DRV8301 {
     const REG_STAT1: u16 = 0 << 11;
     const REG_STAT2: u16 = 1 << 11;
 
-    const REG_CTRL1: u16 = 2 << 11;
+    const REG_CTRL1_ADDR: u16 = 2 << 11;
+    // last two bits are drive strength
+    const REG_CTRL1_VAL: u16 = 0b000_00_10_0_0_00;
     const REG_CTRL2: u16 = 3 << 11;
 
     pub fn setup(
@@ -91,32 +119,36 @@ impl DRV8301 {
         defmt::info!("[INFO] DRV.FAULT present? {}", nfault.is_low());
 
         let tim3 = unsafe { stm32g4xx_hal::pac::Peripherals::steal().TIM3 };
-        let mut spi3 = SPI::new(MODE_2, spi_miso, spi_mosi, spi_clk, stm32g4xx_hal::timer::Timer::new(tim3, &rcc.clocks).start_count_down(1.micros()));
+        let mut spi3 = JonahSPI {
+            spi_ncs,
+            spi_clk,
+            spi_miso,
+            spi_mosi,
+        };
 
         defmt::info!("[INFO] DRV.Basic pin setup done.. Moving on to SPI");
 
         let mut _rxdata =
-            Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD | Self::REG_STAT2);
+            Self::transfer_internal(&mut spi3, Self::FLAG_RD | Self::REG_STAT2);
         defmt::info!("[INFO] DRV.STATUS1 RECV: {:#?}", _rxdata);
-        _rxdata = Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD);
+        _rxdata = Self::transfer_internal(&mut spi3, Self::FLAG_RD);
         defmt::info!("[INFO] DRV.STATUS2 RECV: {:#?}", _rxdata);
 
         // Disable OCP (leave reporting enabled though) & Use lowest gate drive current
         Self::transfer_internal(
             &mut spi3,
-            &mut spi_ncs,
-            Self::FLAG_WR | Self::REG_CTRL1 | 0b000_00_10_0_0_01
+            Self::FLAG_WR | Self::REG_CTRL1_ADDR | Self::REG_CTRL1_VAL
         );
-        Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD | Self::REG_CTRL1);
-        _rxdata = Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD);
+        Self::transfer_internal(&mut spi3, Self::FLAG_RD | Self::REG_CTRL1_ADDR);
+        _rxdata = Self::transfer_internal(&mut spi3, Self::FLAG_RD);
         defmt::info!("[INFO] DRV.CTRL1 RECV: {:#?}", _rxdata);
+        assert_eq!(_rxdata, Self::REG_CTRL1_ADDR | Self::REG_CTRL1_VAL);
 
-        Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD | Self::REG_CTRL2);
-        _rxdata = Self::transfer_internal(&mut spi3, &mut spi_ncs, Self::FLAG_RD);
+        Self::transfer_internal(&mut spi3, Self::FLAG_RD | Self::REG_CTRL2);
+        _rxdata = Self::transfer_internal(&mut spi3, Self::FLAG_RD);
         defmt::info!("[INFO] DRV.CTRL2 RECV: {:#?}", _rxdata);
 
         DRV8301 {
-            pin_spi_ncs: spi_ncs,
             pin_nfault: nfault,
             spi: spi3,
         }
@@ -128,19 +160,10 @@ impl DRV8301 {
     }
 
     pub fn transfer(&mut self, data: u16) -> u16 {
-        Self::transfer_internal(&mut self.spi, &mut self.pin_spi_ncs, data)
+        self.spi.transfer_internal(data)
     }
 
-    fn transfer_internal(spi: &mut BBSPI, ncs: &mut PA15<gpio::Output>, data: u16) -> u16 {
-        ncs.set_low();
-        delay(1000);
-        let mut words_to_send = [((data & 0xFF00) >> 8) as u8, (data & 0xFF) as u8];
-        let words = spi.transfer(&mut words_to_send).unwrap();
-        delay(1000);
-        ncs.set_high();
-        delay(1000);
-        defmt::println!("{}", words[0]);
-        defmt::println!("{}", words[1]);
-        ((words[0] as u16) << 8) | words[1] as u16
+    fn transfer_internal(spi: &mut JonahSPI, data: u16) -> u16 {
+        spi.transfer_internal(data)
     }
 }

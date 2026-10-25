@@ -46,7 +46,6 @@ dependencies = [
  "canadensis_data_types",
  "cortex-m",
  "cortex-m-rt",
- "cortex-m-semihosting",
  "defmt",
  "defmt-rtt",
  "embedded-alloc",
@@ -55,7 +54,7 @@ dependencies = [
  "half",
  "heapless",
  "micromath",
- "panic-semihosting",
+ "panic-probe",
  "stm32g4",
  "stm32g4xx-hal",
 ]
@@ -243,15 +242,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.117",
-]
-
-[[package]]
-name = "cortex-m-semihosting"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c23234600452033cc77e4b761e740e02d2c4168e11dbf36ab14a0f58973592b0"
-dependencies = [
- "cortex-m",
 ]
 
 [[package]]
@@ -500,13 +490,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
-name = "panic-semihosting"
-version = "0.6.0"
+name = "panic-probe"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee8a3e1233d9073d76a870223512ce4eeea43c067a94a445c13bd6d792d7b1ab"
+checksum = "fd402d00b0fb94c5aee000029204a46884b1262e0c443f166d86d2c0747e1a1a"
 dependencies = [
  "cortex-m",
- "cortex-m-semihosting",
+ "defmt",
 ]
 
 [[package]]

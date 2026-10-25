@@ -8,8 +8,6 @@
 
 use core::convert::TryInto;
 use core::f32::consts;
-use core::intrinsics::breakpoint;
-use core::pin::Pin;
 use core::ptr;
 use core::{cell::UnsafeCell, mem::MaybeUninit};
 
@@ -38,7 +36,7 @@ use embedded_common::{
     debug::{itm_send_raw, setup_itm},
     dprintln,
 };
-use panic_semihosting as _;
+use panic_probe as _;
 use defmt_rtt as _;
 
 use stm32g4xx_hal::pac::TIM5;
@@ -164,8 +162,8 @@ fn main() -> ! {
         gpiob.pb7.into_floating_input(),
         gpioa.pa15.into_push_pull_output_in_state(PinState::High),
         gpioc.pc10.into_push_pull_output_in_state(PinState::Low),
-        gpioc.pc11.into_floating_input(),
-        gpioc.pc12.into_push_pull_output_in_state(PinState::Low),
+        gpioc.pc12.into_floating_input(),
+        gpioc.pc11.into_push_pull_output_in_state(PinState::Low),
         dp.SPI3,
         &mut rcc,
     );

@@ -1,6 +1,6 @@
 [package]
 authors = ["Aavin Fernando", "Jonah Hopkin <jonahhopkin@gmail.com>"]
-edition = "2018"
+edition = "2024"
 readme = "README.md"
 name = "besc_firmware"
 version = "0.0.1"
@@ -9,8 +9,7 @@ version = "0.0.1"
 defmt = "1.1"
 defmt-rtt = "1.0"
 cortex-m-rt = "0.7.5"
-cortex-m-semihosting = "0.5.0"
-panic-semihosting = "0.6.0" # NOTE: change to different panic once not in development environment
+panic-probe = { version = "1.0", features = ["defmt"] }
 canadensis = "0.5.0"
 canadensis_data_types = "0.5.0"
 heapless = "0.9.1"

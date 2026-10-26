@@ -1786,7 +1786,7 @@
 		(layer "Edge.Cuts")
 		(uuid "af52da77-f46d-4449-ac95-3e1fbd031552")
 	)
-	(gr_text "By Saksham Gulati"
+	(gr_text "By Saksham Gulati :)"
 		(at 102.5 109.5 0)
 		(layer "B.SilkS")
 		(uuid "b4b88e9c-7df2-478b-83a4-31a08de9e121")

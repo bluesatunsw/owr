@@ -1001,7 +1001,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "<- two close to MCU"
+	(text "<- place close to MCU"
 		(exclude_from_sim no)
 		(at 193.04 107.95 0)
 		(effects
@@ -1010,12 +1010,6 @@
 			)
 		)
 		(uuid "a485889b-4808-4b81-97ed-6fbfd3f55ebf")
-	)
-	(junction
-		(at 167.64 111.76)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "0c08e383-434e-4eaf-993c-46cd5090a725")
 	)
 	(junction
 		(at 138.43 132.08)
@@ -1042,12 +1036,6 @@
 		(uuid "375cdb9e-6354-421e-9f67-8cc68e118d34")
 	)
 	(junction
-		(at 167.64 124.46)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "5b463b55-9cf0-4e59-96f4-ad89ec76bd35")
-	)
-	(junction
 		(at 138.43 123.19)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1072,12 +1060,6 @@
 		(uuid "8bc7be53-4dc9-4090-917d-5a4044864590")
 	)
 	(junction
-		(at 129.54 87.63)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "aac5c75c-d7fb-43b3-bf63-c7ea1fc1cac4")
-	)
-	(junction
 		(at 173.99 95.25)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1095,21 +1077,9 @@
 		(color 0 0 0 0)
 		(uuid "d56c000e-1865-4a75-aa34-e00f1d701292")
 	)
-	(junction
-		(at 138.43 119.38)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e58d516c-7a24-47a9-ba8d-2db1ab5b2f4e")
-	)
-	(junction
-		(at 129.54 111.76)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ee614310-c021-4bcc-9607-0100915eff78")
-	)
 	(wire
 		(pts
-			(xy 129.54 111.76) (xy 130.81 111.76)
+			(xy 125.73 111.76) (xy 130.81 111.76)
 		)
 		(stroke
 			(width 0)
@@ -1179,26 +1149,6 @@
 	)
 	(wire
 		(pts
-			(xy 123.19 87.63) (xy 125.73 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "191b31e4-6921-45c3-84df-ab1849764f5c")
-	)
-	(wire
-		(pts
-			(xy 167.64 111.76) (xy 167.64 107.95)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1e87bbb2-b75b-4dc8-a9af-6a510aa4de47")
-	)
-	(wire
-		(pts
 			(xy 138.43 123.19) (xy 138.43 132.08)
 		)
 		(stroke
@@ -1229,23 +1179,13 @@
 	)
 	(wire
 		(pts
-			(xy 114.3 87.63) (xy 118.11 87.63)
+			(xy 114.3 87.63) (xy 125.73 87.63)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "31a5caef-18a5-4baf-85a2-843c31292c99")
-	)
-	(wire
-		(pts
-			(xy 167.64 111.76) (xy 165.1 111.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3549015d-7f54-4503-94ff-82d9c204fac3")
 	)
 	(wire
 		(pts
@@ -1279,36 +1219,6 @@
 	)
 	(wire
 		(pts
-			(xy 129.54 95.25) (xy 138.43 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "46878da1-8b76-429a-9502-311e3f9c0f5f")
-	)
-	(wire
-		(pts
-			(xy 167.64 111.76) (xy 170.18 111.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "47bd8617-03e9-4fb3-9b98-1c7d3db1e1ba")
-	)
-	(wire
-		(pts
-			(xy 129.54 87.63) (xy 129.54 90.17)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4abdd01b-c52d-4b7b-bd63-a919061b354c")
-	)
-	(wire
-		(pts
 			(xy 179.07 105.41) (xy 179.07 102.87)
 		)
 		(stroke
@@ -1339,53 +1249,13 @@
 	)
 	(wire
 		(pts
-			(xy 165.1 124.46) (xy 167.64 124.46)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "516b9b32-c9a8-4bfd-ad2e-00f33bdbb1bd")
-	)
-	(wire
-		(pts
-			(xy 114.3 111.76) (xy 118.11 111.76)
+			(xy 114.3 111.76) (xy 125.73 111.76)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "5d27d308-cd74-49c4-a5ca-6e9f2a367808")
-	)
-	(wire
-		(pts
-			(xy 170.18 124.46) (xy 170.18 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "64237c47-3ecd-4086-974f-5fa3c44c1d8f")
-	)
-	(wire
-		(pts
-			(xy 165.1 111.76) (xy 165.1 115.57)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "673d54ff-2c0a-4431-9853-baef2ad7ea38")
-	)
-	(wire
-		(pts
-			(xy 129.54 119.38) (xy 138.43 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6fba19b6-710a-4c44-8651-e73d4b783b2d")
 	)
 	(wire
 		(pts
@@ -1429,7 +1299,7 @@
 	)
 	(wire
 		(pts
-			(xy 129.54 87.63) (xy 130.81 87.63)
+			(xy 125.73 87.63) (xy 130.81 87.63)
 		)
 		(stroke
 			(width 0)
@@ -1449,23 +1319,13 @@
 	)
 	(wire
 		(pts
-			(xy 167.64 99.06) (xy 167.64 102.87)
+			(xy 154.94 99.06) (xy 154.94 102.87)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "910edfd7-9ad6-4f59-b537-5c199a72e49b")
-	)
-	(wire
-		(pts
-			(xy 125.73 87.63) (xy 129.54 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "92fbe2f6-05b4-46ca-9329-655c906217f4")
 	)
 	(wire
 		(pts
@@ -1479,27 +1339,7 @@
 	)
 	(wire
 		(pts
-			(xy 129.54 111.76) (xy 129.54 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "95bfc6a2-3e1c-4287-9215-a038f5ab158a")
-	)
-	(wire
-		(pts
-			(xy 125.73 111.76) (xy 129.54 111.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9c35ce6c-c27a-4e95-9d06-56f0e63a1541")
-	)
-	(wire
-		(pts
-			(xy 138.43 99.06) (xy 167.64 99.06)
+			(xy 138.43 99.06) (xy 154.94 99.06)
 		)
 		(stroke
 			(width 0)
@@ -1559,43 +1399,13 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 119.38) (xy 138.43 123.19)
+			(xy 138.43 116.84) (xy 138.43 123.19)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "b4f30fb7-db79-4859-bcbf-79efe0343afd")
-	)
-	(wire
-		(pts
-			(xy 170.18 111.76) (xy 170.18 115.57)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bc2b6db3-b9b3-4219-9004-a4fd17436677")
-	)
-	(wire
-		(pts
-			(xy 167.64 124.46) (xy 170.18 124.46)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "df54a593-cc99-40a1-9945-947422ca8c3f")
-	)
-	(wire
-		(pts
-			(xy 123.19 111.76) (xy 125.73 111.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e396e8e0-1b66-4c6b-941e-ed788603ca19")
 	)
 	(wire
 		(pts
@@ -1616,36 +1426,6 @@
 			(type default)
 		)
 		(uuid "f5333dda-d594-4695-95b6-629661c62f4b")
-	)
-	(wire
-		(pts
-			(xy 165.1 120.65) (xy 165.1 124.46)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f540cd03-3f57-4985-8841-cb292bea0008")
-	)
-	(wire
-		(pts
-			(xy 167.64 124.46) (xy 167.64 128.27)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f9128036-17db-4c96-be4b-ac53e36f6176")
-	)
-	(wire
-		(pts
-			(xy 138.43 116.84) (xy 138.43 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "faeab46f-291e-40e9-ad78-6e55b4a066a8")
 	)
 	(hierarchical_label "SENS"
 		(shape passive)
@@ -1793,96 +1573,6 @@
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
 					(reference "#PWR0501")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Bluesat:C_CompactV")
-		(at 129.54 92.71 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "0ae6eda1-982a-460e-8537-6cbd77228f6e")
-		(property "Reference" "C301"
-			(at 128.651 91.948 90)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "1n"
-			(at 130.429 91.948 90)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 129.54 92.71 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 129.54 92.71 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Unpolarized capacitor, compact symbol"
-			(at 129.54 92.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "ebf9d43a-aaff-410a-9214-7108e0ec6d4b")
-		)
-		(pin "2"
-			(uuid "8617a558-d4b1-4ccd-a118-73ce5ecf2602")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/1b823304-293f-4595-a426-e06902eaf0d9"
-					(reference "C301")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "C401")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "C501")
 					(unit 1)
 				)
 			)
@@ -2071,94 +1761,6 @@
 	)
 	(symbol
 		(lib_id "Bluesat:R_CompactH")
-		(at 120.65 87.63 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "29175ff1-a6f4-49ea-9653-ddce8740fb6b")
-		(property "Reference" "R301"
-			(at 118.618 86.614 0)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Value" "10R"
-			(at 120.65 87.63 0)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 120.65 87.63 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 120.65 87.63 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Resistor, compact symbol"
-			(at 120.4595 87.4395 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "3e5683ca-902a-4222-b9f3-688a2ba253ba")
-		)
-		(pin "2"
-			(uuid "4a456975-944d-42c3-84aa-a45d0a827010")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/1b823304-293f-4595-a426-e06902eaf0d9"
-					(reference "R301")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "R401")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "R501")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Bluesat:R_CompactH")
 		(at 132.08 123.19 0)
 		(unit 1)
 		(body_style 1)
@@ -2278,7 +1880,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 173.99 97.79 0)
 			(hide yes)
 			(show_name no)
@@ -2329,184 +1931,6 @@
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
 					(reference "R509")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Bluesat:R_CompactH")
-		(at 120.65 111.76 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "6cee99f7-3e8f-4bc9-801c-ee191c05bb86")
-		(property "Reference" "R302"
-			(at 118.618 110.744 0)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Value" "10R"
-			(at 120.65 111.76 0)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 120.65 111.76 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 120.65 111.76 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Resistor, compact symbol"
-			(at 120.4595 111.5695 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "acfc4bac-b19f-4d76-913d-4814ef6b487b")
-		)
-		(pin "2"
-			(uuid "a6ee7c19-595a-47d7-bf20-d758590d1f68")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/1b823304-293f-4595-a426-e06902eaf0d9"
-					(reference "R302")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "R402")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "R502")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Bluesat:C_CompactV")
-		(at 129.54 116.84 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "6d9a79ab-0c8a-4d68-b419-9ba3bee82855")
-		(property "Reference" "C302"
-			(at 128.651 116.078 90)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "1n"
-			(at 130.429 116.078 90)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 129.54 116.84 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 129.54 116.84 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Unpolarized capacitor, compact symbol"
-			(at 129.54 116.84 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "0351016b-b350-4db3-8393-cae627c0339a")
-		)
-		(pin "2"
-			(uuid "3ecc9291-228e-4257-9a92-51966779eb36")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/1b823304-293f-4595-a426-e06902eaf0d9"
-					(reference "C302")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "C402")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "C502")
 					(unit 1)
 				)
 			)
@@ -2638,7 +2062,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 173.99 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -2781,7 +2205,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 167.64 128.27 0)
+		(at 154.94 107.95 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -2791,7 +2215,7 @@
 		(dnp no)
 		(uuid "a483ae9a-d31e-424b-a016-7dd7ebc90599")
 		(property "Reference" "#PWR0302"
-			(at 167.64 134.62 0)
+			(at 154.94 114.3 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2802,7 +2226,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 163.576 130.302 0)
+			(at 150.876 109.982 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2812,7 +2236,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 167.64 128.27 0)
+			(at 154.94 107.95 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2823,7 +2247,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 167.64 128.27 0)
+			(at 154.94 107.95 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2834,7 +2258,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 167.64 128.27 0)
+			(at 154.94 107.95 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2866,7 +2290,7 @@
 	)
 	(symbol
 		(lib_id "Bluesat:C_CompactV")
-		(at 167.64 105.41 0)
+		(at 154.94 105.41 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -2877,7 +2301,7 @@
 		(fields_autoplaced yes)
 		(uuid "a8a00a87-2793-4a68-a2e0-58b5fe9bd85e")
 		(property "Reference" "C303"
-			(at 166.751 104.648 90)
+			(at 154.051 104.648 90)
 			(show_name no)
 			(do_not_autoplace yes)
 			(effects
@@ -2888,7 +2312,7 @@
 			)
 		)
 		(property "Value" "3n3"
-			(at 168.529 104.648 90)
+			(at 155.829 104.648 90)
 			(show_name no)
 			(do_not_autoplace yes)
 			(effects
@@ -2899,7 +2323,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 167.64 105.41 90)
+			(at 154.94 105.41 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2910,7 +2334,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 167.64 105.41 90)
+			(at 154.94 105.41 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2921,7 +2345,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, compact symbol"
-			(at 167.64 105.41 0)
+			(at 154.94 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2949,95 +2373,6 @@
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
 					(reference "C503")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Bluesat:R_CompactV")
-		(at 165.1 118.11 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "baf817f9-f181-4782-8c6b-6fc63f28bff1")
-		(property "Reference" "R306"
-			(at 164.211 118.11 90)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Value" "10R"
-			(at 165.1 118.11 90)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 165.1 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 165.1 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Resistor, compact symbol"
-			(at 165.1 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "e6c6e029-83e3-4797-92a6-cfff232f6087")
-		)
-		(pin "1"
-			(uuid "72b1f8c0-5d96-4173-b2af-747a580886b0")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/1b823304-293f-4595-a426-e06902eaf0d9"
-					(reference "R306")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "R406")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "R506")
 					(unit 1)
 				)
 			)
@@ -3162,7 +2497,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 179.07 107.95 90)
 			(hide yes)
 			(show_name no)
@@ -3213,95 +2548,6 @@
 				)
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
 					(reference "C504")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Bluesat:R_CompactV")
-		(at 170.18 118.11 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "e67697a5-df05-4577-8127-6333cdf74c45")
-		(property "Reference" "R307"
-			(at 169.291 118.11 90)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Value" "10R"
-			(at 170.18 118.11 90)
-			(show_name no)
-			(do_not_autoplace yes)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 170.18 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 170.18 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Resistor, compact symbol"
-			(at 170.18 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "7646aca9-a71d-4189-aff9-790a614a0969")
-		)
-		(pin "1"
-			(uuid "6164b3e5-2fa6-47d7-9ee2-d7a15f230856")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/1b823304-293f-4595-a426-e06902eaf0d9"
-					(reference "R307")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/395e1093-67ec-4614-b25c-b37e14ae8318"
-					(reference "R407")
-					(unit 1)
-				)
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/43e157cb-6b50-47c8-9e44-0b1971389d5f"
-					(reference "R507")
 					(unit 1)
 				)
 			)

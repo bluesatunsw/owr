@@ -63,8 +63,8 @@
           "min_clearance": 0.1,
           "min_island_area": 10.0,
           "min_thickness": 0.25,
-          "pad_connection": 1,
-          "remove_islands": 0,
+          "pad_connection": 2,
+          "remove_islands": 1,
           "thermal_relief_gap": 0.5,
           "thermal_relief_spoke_width": 0.5
         }
@@ -717,7 +717,7 @@
         "uuid": "2059a583-03d9-42e7-b042-844898d8f177"
       }
     ],
-    "used_designators": "#FLG202,#FLG204-205,#PWR2-21,#PWR157-158,#PWR206-211,#PWR214,#PWR218,#PWR225-238,#PWR304-306,C1-11,C214-217,C219-220,C222,C224-225,C227,C230,C250,D202,D220-221,L202,L221,L250,R1-8,R115-116,R205-206,R209-213,R220-222,R308-310,U1-2,U220",
+    "used_designators": "#FLG101-105,#FLG202,#FLG204-205,#PWR1-23,#PWR105,#PWR107,#PWR143-144,#PWR147-151,#PWR154,#PWR157-163,#PWR206-211,#PWR213-219,#PWR223,#PWR225-238,#PWR304-306,C1-11,C119-123,C126-139,C210,C214-217,C219-220,C222,C224-225,C227,C230-233,C250,D1,D101,D202,D220-221,D230,J1,J101,L1,L101-102,L202,L221,L230,L250,R1-8,R112-120,R205-206,R208-213,R220-222,R230-232,R308-310,U1-2,U103-105,U220,U230",
     "variants": []
   },
   "sheets": [
@@ -740,6 +740,10 @@
     [
       "43e157cb-6b50-47c8-9e44-0b1971389d5f",
       "MOSFETS C"
+    ],
+    [
+      "6c602034-f4d5-4247-b450-c7280a050474",
+      "Power"
     ]
   ],
   "text_variables": {},

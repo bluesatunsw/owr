@@ -30,7 +30,8 @@ RUN apt-get install -y ros-jazzy-ros-gz
 
 # Ros2Control
 RUN apt-get install -y ros-jazzy-gz-ros2-control ros-jazzy-joint-state-broadcaster \
-    ros-jazzy-diff-drive-controller
+    ros-jazzy-diff-drive-controller \
+    ros-jazzy-ros2-control
 
 # Lichtblick data viewer
 RUN apt-get install -y xdg-utils libnotify4 ros-jazzy-foxglove-bridge

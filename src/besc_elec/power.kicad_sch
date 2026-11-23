@@ -7497,7 +7497,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "93f043fc-e0d3-443b-acb9-eb62518da723")
-		(property "Reference" "U105"
+		(property "Reference" "U104"
 			(at 140.97 88.9 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7571,7 +7571,7 @@
 		(instances
 			(project "vesc2"
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
-					(reference "U105")
+					(reference "U104")
 					(unit 1)
 				)
 			)
@@ -8544,8 +8544,9 @@
 				)
 			)
 		)
-		(property "Value" "XT-60-TOP"
+		(property "Value" "XT-30-TOP"
 			(at 94.615 49.53 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -8554,7 +8555,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_AMASS:AMASS_XT60-M_1x02_P7.20mm_Vertical"
+		(property "Footprint" "Connector_AMASS:AMASS_XT30U-M_1x02_P5.0mm_Vertical"
 			(at 93.98 52.07 0)
 			(hide yes)
 			(show_name no)
@@ -8614,7 +8615,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d9a6a467-d91c-4479-9f64-c06fa14b29cb")
-		(property "Reference" "U104"
+		(property "Reference" "U103"
 			(at 154.94 46.99 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8697,7 +8698,7 @@
 		(instances
 			(project "vesc2"
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
-					(reference "U104")
+					(reference "U103")
 					(unit 1)
 				)
 			)

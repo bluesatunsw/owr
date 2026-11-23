@@ -9022,6 +9022,16 @@
 		)
 		(uuid "6314cd02-60c9-4541-af03-a9bac1b3008e")
 	)
+	(text "also TX/RX"
+		(exclude_from_sim no)
+		(at 143.256 121.666 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "83985b98-ba8a-4d4d-97c8-a1ab1fc07b20")
+	)
 	(text "MOSFETS"
 		(exclude_from_sim no)
 		(at 170.688 35.306 0)
@@ -9041,6 +9051,16 @@
 			)
 		)
 		(uuid "9f9dfe51-f218-4b30-95ae-c690fbd66fde")
+	)
+	(text "external for clock"
+		(exclude_from_sim no)
+		(at 58.928 124.714 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "c5092ba2-2550-4840-97e2-df1769daacae")
 	)
 	(text "Longer chain \nlater perhaps"
 		(exclude_from_sim no)

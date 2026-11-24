@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.20)
 project(swerve_drive_controller)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -22,6 +22,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   realtime_tools
   tf2
   tf2_msgs
+  Eigen3
 )
 
 # Tell CMake to get the deps
@@ -29,7 +30,6 @@ find_package(ament_cmake REQUIRED)
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 add_compile_definitions(RCPPUTILS_VERSION_MAJOR=${rcpputils_VERSION_MAJOR})
 add_compile_definitions(RCPPUTILS_VERSION_MINOR=${rcpputils_VERSION_MINOR})
@@ -46,9 +46,21 @@ target_include_directories(swerve_drive_controller PUBLIC
   $<INSTALL_INTERFACE:include/swerve_drive_controller>
 )
 
-target_link_libraries(swerve_drive_controller PUBLIC swerve_drive_controller_parameters)
-target_link_libraries(swerve_drive_controller PUBLIC Eigen3::Eigen)
-ament_target_dependencies(swerve_drive_controller PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
+target_link_libraries(swerve_drive_controller PUBLIC 
+  swerve_drive_controller_parameters
+  controller_interface::controller_interface
+  hardware_interface::hardware_interface
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+  rcpputils::rcpputils
+  realtime_tools::realtime_tools
+  tf2::tf2
+  ${tf2_msgs_TARGETS}
+  ${geometry_msgs_TARGETS}
+  ${nav_msgs_TARGETS}
+  ${control_msgs_TARGETS}
+)
 pluginlib_export_plugin_description_file(controller_interface swerve_drive_plugin.xml)
 
 if(BUILD_TESTING)
@@ -58,9 +70,9 @@ if(BUILD_TESTING)
 
   add_definitions(-DTEST_FILES_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}/test")
   ament_add_gmock(test_load_swerve_drive_controller test/test_load_swerve_drive_controller.cpp)
-  ament_target_dependencies(test_load_swerve_drive_controller
-    controller_manager
-    ros2_control_test_assets
+  target_link_libraries(test_load_swerve_drive_controller
+    controller_manager::controller_manager
+    ros2_control_test_assets::ros2_control_test_assets
   )
 
   find_package(ament_lint_auto REQUIRED)

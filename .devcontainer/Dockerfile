@@ -21,7 +21,9 @@ RUN apt-get update && apt-get upgrade -y
 
 # Install additional ros packages
 RUN apt-get install -y ros-lyrical-xacro \ 
-    ros-lyrical-joint-state-publisher
+    ros-lyrical-joint-state-publisher \
+    ros-lyrical-ffmpeg-image-transport \
+    ros-lyrical-v4l2-camera
 
 # Gazebo
 RUN apt-get install -y ros-lyrical-ros-gz 

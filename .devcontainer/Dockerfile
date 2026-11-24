@@ -2,6 +2,7 @@ FROM docker.io/osrf/ros:lyrical-desktop-full as dev
 ARG USERNAME=dcuser
 ARG UID=1010
 ARG GID=1010
+ARG WORKSPACE_DIR=/workspaces/owr
 
 ARG RUST_VERSION=1.99.0
 
@@ -77,9 +78,10 @@ RUN curl https://sh.rustup.rs -sSf | \
 RUN pip install colcon-fish --break-system-packages
 RUN <<EOT cat > /home/$USERNAME/.config/fish/config.fish
 if status is-interactive
-    source /workspaces/owr/utils/shellinit
+    source $WORKSPACE_DIR/utils/shellinit
 end
 set -g fish_greeting # Disable fish greeting!
 EOT
 
+WORKDIR $WORKSPACE_DIR
 CMD ["/bin/bash"]

@@ -1,4 +1,4 @@
-FROM docker.io/osrf/ros:jazzy-desktop-full as dev
+FROM docker.io/osrf/ros:lyrical-desktop-full as dev
 ARG USERNAME=dcuser
 ARG UID=1010
 ARG GID=1010
@@ -20,27 +20,25 @@ RUN apt-get update && apt-get upgrade -y
 # ********************************************************
 
 # Install additional ros packages
-RUN apt-get install -y ros-jazzy-xacro \ 
-    ros-jazzy-joint-state-publisher \
-    ros-jazzy-usb-cam \
-    python3-pydantic # usb-cam dependency
+RUN apt-get install -y ros-lyrical-xacro \ 
+    ros-lyrical-joint-state-publisher
 
 # Gazebo
-RUN apt-get install -y ros-jazzy-ros-gz 
+RUN apt-get install -y ros-lyrical-ros-gz 
 
 # Ros2Control
-RUN apt-get install -y ros-jazzy-gz-ros2-control ros-jazzy-joint-state-broadcaster \
-    ros-jazzy-diff-drive-controller \
-    ros-jazzy-ros2-control
+RUN apt-get install -y ros-lyrical-gz-ros2-control ros-lyrical-joint-state-broadcaster \
+    ros-lyrical-diff-drive-controller \
+    ros-lyrical-ros2-control
 
 # Lichtblick data viewer
-RUN apt-get install -y xdg-utils libnotify4 ros-jazzy-foxglove-bridge
+RUN apt-get install -y xdg-utils libnotify4 ros-lyrical-foxglove-bridge
 RUN curl "https://github.com/lichtblick-suite/lichtblick/releases/latest/download/$(curl https://github.com/lichtblick-suite/lichtblick/releases/latest/download/latest-linux.yml -qL 2>/dev/null| grep url | cut -d ':' -f 2 | tr -d ' ')" -Lo lichtblick.deb \ 
     && dpkg -i lichtblick.deb \
     && rm lichtblick.deb
 
 # dependency of swerve_drive_controller
-RUN apt-get install ros-jazzy-ros2-control-test-assets 
+RUN apt-get install ros-lyrical-ros2-control-test-assets 
 
 RUN echo '* soft rtprio 99\n\
 * soft priority 99\n\

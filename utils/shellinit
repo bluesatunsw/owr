@@ -1,0 +1,21 @@
+#!/usr/bin/env fish
+
+# You have to manually run this!
+function owr_update 
+    rosdep update && rosdep install --from-paths src --ignore-src -y
+end
+
+
+function owr_env
+    set -f fpath /workspaces/owr/install/local_setup.fish
+    if test -e $fpath 
+        source $fpath 
+    else
+        echo Warning! No build artifacts detected! 
+	echo Run colcon build and then owr_env or you CANNOT use owr packages!
+    end
+end
+
+# By default we'll....
+source /opt/ros/lyrical/setup.fish
+owr_env

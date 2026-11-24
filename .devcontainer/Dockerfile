@@ -72,4 +72,14 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 RUN curl https://sh.rustup.rs -sSf | \
     bash -s -- --default-toolchain ${RUST_VERSION} -y
 
+# set up shell
+# so it makes /workspaces/owr/install/local_setup.fish
+RUN pip install colcon-fish --break-system-packages
+RUN <<EOT cat > /home/$USERNAME/.config/fish/config.fish
+if status is-interactive
+    source /workspaces/owr/utils/shellinit
+end
+set -g fish_greeting # Disable fish greeting!
+EOT
+
 CMD ["/bin/bash"]

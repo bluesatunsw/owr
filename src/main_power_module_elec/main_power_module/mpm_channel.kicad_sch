@@ -1736,7 +1736,7 @@
 	)
 	(text "Discharging a channel"
 		(exclude_from_sim no)
-		(at 135.128 89.662 90)
+		(at 135.128 88.138 90)
 		(effects
 			(font
 				(size 0.508 0.508)
@@ -1758,11 +1758,23 @@
 		)
 		(uuid "0fbf4299-4d87-4fb6-8da6-83e2df750234")
 	)
+	(text "TBR: fix it. this setup broke."
+		(exclude_from_sim no)
+		(at 109.728 65.278 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+				(thickness 0.1016)
+				(bold yes)
+			)
+		)
+		(uuid "f24e3d2f-0e58-43b2-ba07-5651d91ee4ff")
+	)
 	(junction
-		(at 179.07 102.87)
+		(at 135.89 92.71)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "1d36f32e-42a4-43f3-9135-ef881c1cb4e2")
+		(uuid "1994aaac-2fee-499c-930c-44c82a4cb27d")
 	)
 	(junction
 		(at 135.89 78.74)
@@ -1795,22 +1807,22 @@
 		(uuid "a3c5b97a-8ede-4bc7-a8e9-3f0fb73ca4e2")
 	)
 	(junction
-		(at 135.89 93.98)
+		(at 179.07 102.87)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "aec2a120-491e-471a-bd28-b8a3043956bd")
-	)
-	(junction
-		(at 179.07 96.52)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e314d14e-e55e-47c2-a404-c32a82dcd240")
+		(uuid "ab336aba-93c1-44b3-9168-b538908ff09f")
 	)
 	(junction
 		(at 170.18 82.55)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ec2eff34-7949-4f4d-a66d-8975eb987823")
+	)
+	(junction
+		(at 179.07 96.52)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f482742f-2f1f-4540-bb23-15413fba6cfb")
 	)
 	(wire
 		(pts
@@ -1821,16 +1833,6 @@
 			(type default)
 		)
 		(uuid "06c644b0-c3c0-48ee-b098-809fe0b21acb")
-	)
-	(wire
-		(pts
-			(xy 179.07 101.6) (xy 179.07 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "087767cc-59dc-4611-a3cb-609f997b62ee")
 	)
 	(wire
 		(pts
@@ -1854,17 +1856,7 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 99.06) (xy 180.34 99.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "30d5090a-0434-44ba-b8f3-bfe6dd5ffef9")
-	)
-	(wire
-		(pts
-			(xy 118.11 93.98) (xy 135.89 93.98)
+			(xy 118.11 92.71) (xy 135.89 92.71)
 		)
 		(stroke
 			(width 0)
@@ -1884,13 +1876,13 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 99.06) (xy 179.07 96.52)
+			(xy 181.61 101.6) (xy 179.07 101.6)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "433a36a3-855f-4fa8-a153-c8d8f01d42d2")
+		(uuid "4400283b-7436-4ff5-bf74-c039e68de77e")
 	)
 	(wire
 		(pts
@@ -1904,7 +1896,7 @@
 	)
 	(wire
 		(pts
-			(xy 152.4 93.98) (xy 152.4 95.25)
+			(xy 152.4 92.71) (xy 152.4 95.25)
 		)
 		(stroke
 			(width 0)
@@ -1924,6 +1916,16 @@
 	)
 	(wire
 		(pts
+			(xy 179.07 99.06) (xy 181.61 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5522cb42-ef9b-457e-b479-a331fd15cb02")
+	)
+	(wire
+		(pts
 			(xy 170.18 93.98) (xy 170.18 96.52)
 		)
 		(stroke
@@ -1934,7 +1936,7 @@
 	)
 	(wire
 		(pts
-			(xy 135.89 93.98) (xy 152.4 93.98)
+			(xy 135.89 92.71) (xy 152.4 92.71)
 		)
 		(stroke
 			(width 0)
@@ -1954,7 +1956,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 93.98) (xy 118.11 95.25)
+			(xy 118.11 92.71) (xy 118.11 95.25)
 		)
 		(stroke
 			(width 0)
@@ -2011,16 +2013,6 @@
 			(type default)
 		)
 		(uuid "a2d3ce0a-1045-46ec-845e-a3308826db9a")
-	)
-	(wire
-		(pts
-			(xy 179.07 101.6) (xy 180.34 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "af40f7f6-fc9b-44f5-85ad-08b3f99558d6")
 	)
 	(wire
 		(pts
@@ -2084,6 +2076,16 @@
 	)
 	(wire
 		(pts
+			(xy 179.07 101.6) (xy 179.07 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c7eb64aa-7c24-4de7-a09d-18e4e8fa7ae3")
+	)
+	(wire
+		(pts
 			(xy 135.89 78.74) (xy 135.89 82.55)
 		)
 		(stroke
@@ -2114,13 +2116,23 @@
 	)
 	(wire
 		(pts
-			(xy 135.89 82.55) (xy 135.89 93.98)
+			(xy 135.89 82.55) (xy 135.89 92.71)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "e383cb51-82bf-41c2-b239-cdd65eb11ee7")
+	)
+	(wire
+		(pts
+			(xy 179.07 96.52) (xy 179.07 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e457d64a-94b8-428a-a661-83a4e30aab55")
 	)
 	(wire
 		(pts
@@ -3657,7 +3669,8 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x02")
-		(at 185.42 99.06 0)
+		(at 186.69 101.6 0)
+		(mirror x)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3665,10 +3678,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "c995071d-4df8-4875-87e8-2ad26c0f96e3")
 		(property "Reference" "J6"
-			(at 187.96 99.0599 0)
+			(at 189.23 101.6001 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3679,7 +3691,7 @@
 			)
 		)
 		(property "Value" "XT60F"
-			(at 187.96 101.5999 0)
+			(at 189.23 99.0601 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3690,7 +3702,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 185.42 99.06 0)
+			(at 186.69 101.6 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3701,7 +3713,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 185.42 99.06 0)
+			(at 186.69 101.6 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3712,7 +3724,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 185.42 99.06 0)
+			(at 186.69 101.6 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)

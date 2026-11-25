@@ -416,7 +416,7 @@
         "uuid": "05dbdbd2-5946-4a3a-8ea0-ef9e5f404c7e"
       }
     ],
-    "used_designators": "U1-6,U220,#FLG1-7,#FLG204,#FLG207,R1-20,R220-222,J1-5,L1-5,L220-221,D1-9,D220,#PWR1-76,#PWR206,#PWR208-211,#PWR218,#PWR229-231,#PWR233,C1-26,C28-45,C221-227,FB1-3,Y1,X1,Q1",
+    "used_designators": "U1-6,U220,#FLG1-12,#FLG204,#FLG207,R1-42,R220-222,J1-9,L1-5,L220-221,D1-19,D220,#PWR1-109,#PWR206,#PWR208-211,#PWR218,#PWR229-231,#PWR233,C1-26,C28-47,C221-227,FB1-3,Y1,X1,Q1-10",
     "variants": []
   },
   "sheets": [
@@ -427,6 +427,26 @@
     [
       "c2ee20fd-8295-4cb2-a64f-08c35ac3860e",
       "Power"
+    ],
+    [
+      "6c7820fa-f0f8-44e1-8aab-53073cff2c7f",
+      "Switching"
+    ],
+    [
+      "5aa6b1c6-2848-484e-ab9d-37f0ee86cc48",
+      "Channel1"
+    ],
+    [
+      "8baff86d-753a-4eb4-8aa6-e707d524aefc",
+      "Channel2"
+    ],
+    [
+      "042a0877-55bd-4156-b326-5ea473aa1693",
+      "Channel3"
+    ],
+    [
+      "dea6eaca-a7d8-4187-9f88-9a9d12f760b6",
+      "Channel4"
     ]
   ],
   "text_variables": {},

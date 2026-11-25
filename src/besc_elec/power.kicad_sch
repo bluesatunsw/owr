@@ -3073,6 +3073,16 @@
 		)
 		(uuid "bbd0ae8f-7523-4d40-8328-a93b5f23f9e6")
 	)
+	(text "50V rated\n"
+		(exclude_from_sim no)
+		(at 125.476 129.032 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "108eefa1-cd24-4e4f-b99b-f9407ad23c6a")
+	)
 	(text "VBUS -> 3V3 Buck"
 		(exclude_from_sim no)
 		(at 119.634 98.806 0)
@@ -8161,7 +8171,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_AMASS:AMASS_XT30U-M_1x02_P5.0mm_Vertical"
+		(property "Footprint" "Connector_AMASS:AMASS_XT30PW-M_1x02_P2.50mm_Horizontal"
 			(at 124.46 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -8629,7 +8639,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "fc699756-8356-472d-9d26-d7de25a5fffb")
-		(property "Reference" "D103"
+		(property "Reference" "D109"
 			(at 144.526 102.108 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8691,7 +8701,7 @@
 		(instances
 			(project "vesc2"
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
-					(reference "D103")
+					(reference "D109")
 					(unit 1)
 				)
 			)

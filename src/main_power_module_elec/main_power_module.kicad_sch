@@ -6201,7 +6201,7 @@
 		(at 182.88 144.78)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "f7eb732f-3850-47e9-9864-618eacb4f02e")
+		(uuid "f519fea9-132f-4b72-8ed3-a5bd2129041f")
 	)
 	(junction
 		(at 26.67 40.64)
@@ -6218,6 +6218,10 @@
 	(no_connect
 		(at 97.79 69.85)
 		(uuid "02a70fcf-532b-4b00-84b2-9a834f0505f1")
+	)
+	(no_connect
+		(at 133.35 118.11)
+		(uuid "065ba6de-d109-475a-9062-a5ad97c2f575")
 	)
 	(no_connect
 		(at 133.35 97.79)
@@ -6274,20 +6278,6 @@
 	(no_connect
 		(at 133.35 100.33)
 		(uuid "c7857680-b4df-4eb0-bd41-fbd7c61663a0")
-	)
-	(no_connect
-		(at 133.35 92.71)
-		(uuid "d9cf273d-4078-4e94-9d4b-61aba24e8a18")
-	)
-	(wire
-		(pts
-			(xy 133.35 118.11) (xy 151.13 118.11)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0001448d-c6e4-4487-a7f6-81bb92c64b33")
 	)
 	(wire
 		(pts
@@ -6491,7 +6481,7 @@
 	)
 	(wire
 		(pts
-			(xy 175.26 144.78) (xy 182.88 144.78)
+			(xy 170.18 144.78) (xy 182.88 144.78)
 		)
 		(stroke
 			(width 0)
@@ -8121,6 +8111,16 @@
 	)
 	(wire
 		(pts
+			(xy 133.35 92.71) (xy 151.13 92.71)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e6afc6a7-7a9a-4976-ae68-1e0482686ee1")
+	)
+	(wire
+		(pts
 			(xy 198.12 46.99) (xy 198.12 48.26)
 		)
 		(stroke
@@ -8469,8 +8469,8 @@
 		)
 		(uuid "45617dfd-6ef4-4bf9-b6e2-e46b47e3b77e")
 	)
-	(label "LEDS"
-		(at 175.26 144.78 0)
+	(label "USART_LED"
+		(at 170.18 144.78 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -8519,6 +8519,16 @@
 		)
 		(uuid "56ee73fd-6489-46e8-8799-a4fd4bec51a4")
 	)
+	(label "SWO"
+		(at 151.13 92.71 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "5bf116f8-4d2e-4a1d-a4d5-c3f9dd40124f")
+	)
 	(label "Temp"
 		(at 80.01 67.31 0)
 		(effects
@@ -8539,7 +8549,7 @@
 		)
 		(uuid "635efe72-babc-437d-81da-894693669227")
 	)
-	(label "LEDS"
+	(label "USART_LED"
 		(at 151.13 64.77 180)
 		(effects
 			(font
@@ -8547,7 +8557,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "6455d070-27b4-4c70-85d8-42fcce46bfb2")
+		(uuid "66630823-b852-457c-9623-de8b14f4fa0f")
 	)
 	(label "CAN_TXD"
 		(at 173.99 99.06 0)
@@ -8618,16 +8628,6 @@
 			(justify right bottom)
 		)
 		(uuid "7f876a7a-e5cb-46ab-87d8-b56081f98686")
-	)
-	(label "SWO"
-		(at 151.13 118.11 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "82cce838-d58b-4fbb-a66b-24dbddb5a841")
 	)
 	(label "~{CH3_EN}"
 		(at 80.01 82.55 0)

@@ -509,474 +509,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "C_CompactV_1"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0.254)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "C"
-				(at 0.889 0.762 90)
-				(show_name no)
-				(do_not_autoplace yes)
-				(effects
-					(font
-						(size 1.016 1.016)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "C_CompactV"
-				(at -0.889 0.762 90)
-				(show_name no)
-				(do_not_autoplace yes)
-				(effects
-					(font
-						(size 1.016 1.016)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Unpolarized capacitor, compact symbol"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "capacitor cap"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "C_*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "C_CompactV_1_0_1"
-				(polyline
-					(pts
-						(xy -1.524 0.508) (xy 1.524 0.508)
-					)
-					(stroke
-						(width 0.3302)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.524 -0.508) (xy 1.524 -0.508)
-					)
-					(stroke
-						(width 0.3048)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "C_CompactV_1_1_1"
-				(pin passive line
-					(at 0 -2.54 90)
-					(length 2.032)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 2.54 270)
-					(length 2.032)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "C_CompactV_2"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0.254)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "C"
-				(at -0.889 0.762 90)
-				(show_name no)
-				(do_not_autoplace yes)
-				(effects
-					(font
-						(size 1.016 1.016)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "C_CompactV"
-				(at 0.889 0.762 90)
-				(show_name no)
-				(do_not_autoplace yes)
-				(effects
-					(font
-						(size 1.016 1.016)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Unpolarized capacitor, compact symbol"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "capacitor cap"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "C_*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "C_CompactV_2_0_1"
-				(polyline
-					(pts
-						(xy 1.524 0.508) (xy -1.524 0.508)
-					)
-					(stroke
-						(width 0.3302)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.524 -0.508) (xy -1.524 -0.508)
-					)
-					(stroke
-						(width 0.3048)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "C_CompactV_2_1_1"
-				(pin passive line
-					(at 0 -2.54 90)
-					(length 2.032)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 2.54 270)
-					(length 2.032)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "C_CompactV_4"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0.254)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "C"
-				(at 0.889 0.762 90)
-				(show_name no)
-				(do_not_autoplace yes)
-				(effects
-					(font
-						(size 1.016 1.016)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "C_CompactV"
-				(at -0.889 0.762 90)
-				(show_name no)
-				(do_not_autoplace yes)
-				(effects
-					(font
-						(size 1.016 1.016)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Unpolarized capacitor, compact symbol"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "capacitor cap"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "C_*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "C_CompactV_4_0_1"
-				(polyline
-					(pts
-						(xy -1.524 0.508) (xy 1.524 0.508)
-					)
-					(stroke
-						(width 0.3302)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.524 -0.508) (xy 1.524 -0.508)
-					)
-					(stroke
-						(width 0.3048)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "C_CompactV_4_1_1"
-				(pin passive line
-					(at 0 -2.54 90)
-					(length 2.032)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 2.54 270)
-					(length 2.032)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Connector:Conn_01x02_Pin"
 			(pin_names
 				(offset 1.016)
@@ -3156,12 +2688,6 @@
 		(uuid "14469406-800e-4c11-b52c-1af189599533")
 	)
 	(junction
-		(at 144.78 85.09)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "146fe82d-3f1d-4836-bbd3-30c2f822e6bc")
-	)
-	(junction
 		(at 165.1 116.84)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3186,12 +2712,6 @@
 		(uuid "5b3bbe99-bb48-45f6-a6bc-d0c4c6c85f58")
 	)
 	(junction
-		(at 134.62 82.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "6e09a35c-eaa1-47ae-b760-9babe22cfc41")
-	)
-	(junction
 		(at 158.75 81.28)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3202,6 +2722,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7f305007-925c-498f-bf2d-156994e72ad3")
+	)
+	(junction
+		(at 135.89 82.55)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "84896c27-3324-4e88-ad27-be638e9370b7")
 	)
 	(junction
 		(at 165.1 114.3)
@@ -3222,12 +2748,6 @@
 		(uuid "98f33f1b-8079-4189-a22b-f5dc4d98afa1")
 	)
 	(junction
-		(at 185.42 76.2)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "9a9a6661-c618-48c7-98e3-f338342828d9")
-	)
-	(junction
 		(at 133.35 85.09)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3244,6 +2764,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c9911fbb-3c5f-41c2-8b98-5470db584a9d")
+	)
+	(junction
+		(at 147.32 85.09)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "cdace0c8-5391-47c5-bf6b-7edab7c3cf0e")
 	)
 	(junction
 		(at 133.35 114.3)
@@ -3292,16 +2818,6 @@
 			(type default)
 		)
 		(uuid "09556fa4-3af7-4146-9d87-b73a4339275d")
-	)
-	(wire
-		(pts
-			(xy 129.54 82.55) (xy 134.62 82.55)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0971a9c5-a3e6-4668-bce3-187b66b219e7")
 	)
 	(wire
 		(pts
@@ -3395,7 +2911,7 @@
 	)
 	(wire
 		(pts
-			(xy 185.42 76.2) (xy 189.23 76.2)
+			(xy 181.61 76.2) (xy 189.23 76.2)
 		)
 		(stroke
 			(width 0)
@@ -3475,7 +2991,7 @@
 	)
 	(wire
 		(pts
-			(xy 134.62 82.55) (xy 137.16 82.55)
+			(xy 129.54 82.55) (xy 135.89 82.55)
 		)
 		(stroke
 			(width 0)
@@ -3655,16 +3171,6 @@
 	)
 	(wire
 		(pts
-			(xy 181.61 76.2) (xy 185.42 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "89349bfe-2b31-41b6-a854-b7a53e34ab12")
-	)
-	(wire
-		(pts
 			(xy 158.75 76.2) (xy 158.75 81.28)
 		)
 		(stroke
@@ -3682,16 +3188,6 @@
 			(type default)
 		)
 		(uuid "8dafe0c1-49b6-49cc-8ce9-44a794120e19")
-	)
-	(wire
-		(pts
-			(xy 149.86 85.09) (xy 144.78 85.09)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9499b12c-cdde-4c63-ba9a-85210c46fd95")
 	)
 	(wire
 		(pts
@@ -3845,6 +3341,16 @@
 	)
 	(wire
 		(pts
+			(xy 147.32 85.09) (xy 149.86 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d3af02da-b5a2-4013-8723-e2a43d7459ac")
+	)
+	(wire
+		(pts
 			(xy 123.19 114.3) (xy 123.19 118.11)
 		)
 		(stroke
@@ -3862,6 +3368,16 @@
 			(type default)
 		)
 		(uuid "df6261f8-fe73-4e55-ade6-2323508693c0")
+	)
+	(wire
+		(pts
+			(xy 135.89 82.55) (xy 137.16 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ef2454eb-fefa-4b33-9d4e-29584d344176")
 	)
 	(wire
 		(pts
@@ -3895,7 +3411,7 @@
 	)
 	(wire
 		(pts
-			(xy 133.35 85.09) (xy 144.78 85.09)
+			(xy 133.35 85.09) (xy 147.32 85.09)
 		)
 		(stroke
 			(width 0)
@@ -4998,16 +4514,6 @@
 			"TkSuQmCC"
 		)
 	)
-	(label "VBUS"
-		(at 133.35 114.3 180)
-		(effects
-			(font
-				(size 1.016 1.016)
-			)
-			(justify right bottom)
-		)
-		(uuid "211fd1b2-9e24-4a7b-b59b-df880b118f0f")
-	)
 	(label "3V3_{SW}"
 		(at 156.21 114.3 0)
 		(effects
@@ -5599,7 +5105,6 @@
 		)
 	)
 	(symbol
-		(lib_name "C_CompactV_4")
 		(lib_id "Bluesat:C_CompactV")
 		(at 172.72 120.65 0)
 		(mirror y)
@@ -5623,7 +5128,7 @@
 			)
 		)
 		(property "Value" "33p"
-			(at 173.736 119.38 90)
+			(at 173.736 119.634 90)
 			(show_name no)
 			(do_not_autoplace yes)
 			(effects
@@ -6543,7 +6048,6 @@
 		)
 	)
 	(symbol
-		(lib_name "C_CompactV_2")
 		(lib_id "Bluesat:C_CompactV")
 		(at 134.62 64.77 0)
 		(unit 1)
@@ -6626,163 +6130,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 185.42 76.2 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "68034dc4-e35a-4ec3-8d12-af29c8323028")
-		(property "Reference" "#FLG0105"
-			(at 185.42 74.295 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 185.42 72.644 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 185.42 76.2 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 185.42 76.2 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 185.42 76.2 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "8d19f144-cf60-4117-b958-9fa79ac3bb7c")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
-					(reference "#FLG0105")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 144.78 85.09 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "694b66c1-511b-4e1f-aa01-0767f5053241")
-		(property "Reference" "#FLG0102"
-			(at 144.78 83.185 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 144.78 81.534 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 144.78 85.09 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 144.78 85.09 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 144.78 85.09 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "c04bf507-cd4b-4618-80ee-a81a1d96de71")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
-					(reference "#FLG0102")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_name "C_CompactV_2")
 		(lib_id "Bluesat:C_CompactV")
 		(at 186.69 119.38 0)
 		(unit 1)
@@ -7177,6 +6524,85 @@
 		)
 	)
 	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 147.32 85.09 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8d037634-52de-46b2-b11f-4ab2aca95008")
+		(property "Reference" "#FLG0104"
+			(at 147.32 83.185 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 147.32 80.01 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 147.32 85.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 147.32 85.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 147.32 85.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "426c24b2-1890-49af-9d15-65840cbb30fd")
+		)
+		(instances
+			(project "vesc2"
+				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
+					(reference "#FLG0104")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Bluesat:C_CompactV")
 		(at 158.75 86.36 0)
 		(unit 1)
@@ -7351,7 +6777,6 @@
 		)
 	)
 	(symbol
-		(lib_name "C_CompactV_2")
 		(lib_id "Bluesat:C_CompactV")
 		(at 127 120.65 0)
 		(unit 1)
@@ -7428,6 +6853,85 @@
 			(project "vesc2"
 				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
 					(reference "C134")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 135.89 82.55 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9b66cf47-27db-4ec4-8420-1219c3b90ee4")
+		(property "Reference" "#FLG0105"
+			(at 135.89 80.645 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 135.89 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 135.89 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 135.89 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 135.89 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "86c0df13-8f8a-46f7-9ff6-da2e96748f3d")
+		)
+		(instances
+			(project "vesc2"
+				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
+					(reference "#FLG0105")
 					(unit 1)
 				)
 			)
@@ -7907,84 +7411,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 134.62 82.55 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "cbb2e60d-bb7a-4b76-8a92-28f8b9f0ae32")
-		(property "Reference" "#FLG0101"
-			(at 134.62 80.645 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 134.62 78.994 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 134.62 82.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 134.62 82.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 134.62 82.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "a2a4a39a-15d7-4c46-9773-44e7eae9f169")
-		)
-		(instances
-			(project "vesc2"
-				(path "/2059a583-03d9-42e7-b042-844898d8f177/6c602034-f4d5-4247-b450-c7280a050474"
-					(reference "#FLG0101")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 123.19 123.19 0)
 		(unit 1)
@@ -8220,7 +7646,6 @@
 		)
 	)
 	(symbol
-		(lib_name "C_CompactV_2")
 		(lib_id "Bluesat:C_CompactV")
 		(at 123.19 120.65 0)
 		(unit 1)
@@ -8254,7 +7679,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 123.19 120.65 90)
 			(hide yes)
 			(show_name no)
@@ -8303,7 +7728,6 @@
 		)
 	)
 	(symbol
-		(lib_name "C_CompactV_1")
 		(lib_id "Bluesat:C_CompactV")
 		(at 157.48 116.84 270)
 		(mirror x)
@@ -8386,7 +7810,6 @@
 		)
 	)
 	(symbol
-		(lib_name "C_CompactV_2")
 		(lib_id "Bluesat:C_CompactV")
 		(at 124.46 64.77 0)
 		(unit 1)
@@ -8469,7 +7892,6 @@
 		)
 	)
 	(symbol
-		(lib_name "C_CompactV_2")
 		(lib_id "Bluesat:C_CompactV")
 		(at 182.88 119.38 0)
 		(unit 1)

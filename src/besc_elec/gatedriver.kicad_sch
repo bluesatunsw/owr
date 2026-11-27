@@ -585,7 +585,9 @@
 						(type none)
 					)
 				)
-				(pin unspecified line
+			)
+			(symbol "DRV8323HRTAR_1_1"
+				(pin passive line
 					(at -13.97 22.86 0)
 					(length 2.54)
 					(name "CPL"
@@ -603,7 +605,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin passive line
 					(at -13.97 20.32 0)
 					(length 2.54)
 					(name "CPH"
@@ -621,7 +623,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin passive line
 					(at -13.97 17.78 0)
 					(length 2.54)
 					(name "VCP"
@@ -639,7 +641,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin power_in line
 					(at -13.97 15.24 0)
 					(length 2.54)
 					(name "VM"
@@ -657,7 +659,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 12.7 0)
 					(length 2.54)
 					(name "VDRAIN"
@@ -675,7 +677,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at -13.97 10.16 0)
 					(length 2.54)
 					(name "GHA"
@@ -693,7 +695,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 7.62 0)
 					(length 2.54)
 					(name "SHA"
@@ -711,7 +713,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at -13.97 5.08 0)
 					(length 2.54)
 					(name "GLA"
@@ -729,7 +731,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 2.54 0)
 					(length 2.54)
 					(name "SPA"
@@ -747,7 +749,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 0 0)
 					(length 2.54)
 					(name "SNA"
@@ -765,7 +767,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 -2.54 0)
 					(length 2.54)
 					(name "SNB"
@@ -783,7 +785,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 -5.08 0)
 					(length 2.54)
 					(name "SPB"
@@ -801,7 +803,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at -13.97 -7.62 0)
 					(length 2.54)
 					(name "GLB"
@@ -819,7 +821,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 -10.16 0)
 					(length 2.54)
 					(name "SHB"
@@ -837,7 +839,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at -13.97 -12.7 0)
 					(length 2.54)
 					(name "GHB"
@@ -855,7 +857,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at -13.97 -15.24 0)
 					(length 2.54)
 					(name "GHC"
@@ -873,7 +875,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 -17.78 0)
 					(length 2.54)
 					(name "SHC"
@@ -891,7 +893,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at -13.97 -20.32 0)
 					(length 2.54)
 					(name "GLC"
@@ -909,7 +911,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 -22.86 0)
 					(length 2.54)
 					(name "SPC"
@@ -927,7 +929,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at -13.97 -25.4 0)
 					(length 2.54)
 					(name "SNC"
@@ -945,7 +947,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at 13.97 -25.4 180)
 					(length 2.54)
 					(name "SOC"
@@ -963,7 +965,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at 13.97 -22.86 180)
 					(length 2.54)
 					(name "SOB"
@@ -981,7 +983,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin output line
 					(at 13.97 -20.32 180)
 					(length 2.54)
 					(name "SOA"
@@ -999,7 +1001,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin power_in line
 					(at 13.97 -17.78 180)
 					(length 2.54)
 					(name "VREF"
@@ -1017,7 +1019,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin open_collector line
 					(at 13.97 -15.24 180)
 					(length 2.54)
 					(name "nFAULT"
@@ -1035,7 +1037,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 -12.7 180)
 					(length 2.54)
 					(name "MODE"
@@ -1053,7 +1055,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 -10.16 180)
 					(length 2.54)
 					(name "IDRIVE"
@@ -1071,7 +1073,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 -7.62 180)
 					(length 2.54)
 					(name "VDS"
@@ -1089,7 +1091,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 -5.08 180)
 					(length 2.54)
 					(name "GAIN"
@@ -1107,7 +1109,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 -2.54 180)
 					(length 2.54)
 					(name "ENABLE"
@@ -1125,7 +1127,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 0 180)
 					(length 2.54)
 					(name "CAL"
@@ -1143,7 +1145,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin power_in line
 					(at 13.97 2.54 180)
 					(length 2.54)
 					(name "AGND"
@@ -1161,7 +1163,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin power_out line
 					(at 13.97 5.08 180)
 					(length 2.54)
 					(name "DVDD"
@@ -1179,7 +1181,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 7.62 180)
 					(length 2.54)
 					(name "INHA"
@@ -1197,7 +1199,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 10.16 180)
 					(length 2.54)
 					(name "INLA"
@@ -1215,7 +1217,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 12.7 180)
 					(length 2.54)
 					(name "INHB"
@@ -1233,7 +1235,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 15.24 180)
 					(length 2.54)
 					(name "INLB"
@@ -1251,7 +1253,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 17.78 180)
 					(length 2.54)
 					(name "INHC"
@@ -1269,7 +1271,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin input line
 					(at 13.97 20.32 180)
 					(length 2.54)
 					(name "INLC"
@@ -1287,7 +1289,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin power_in line
 					(at 13.97 22.86 180)
 					(length 2.54)
 					(name "PGND"
@@ -1305,7 +1307,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin power_in line
 					(at 13.97 25.4 180)
 					(length 2.54)
 					(name "EP"

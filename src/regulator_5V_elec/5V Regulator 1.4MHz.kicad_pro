@@ -60,11 +60,11 @@
           "hatch_smoothing_level": 0,
           "hatch_smoothing_value": 0.1,
           "hatch_thickness": 1.0,
-          "min_clearance": 0.5,
+          "min_clearance": 0.3,
           "min_island_area": 10.0,
           "min_thickness": 0.25,
-          "pad_connection": 1,
-          "remove_islands": 0,
+          "pad_connection": 2,
+          "remove_islands": 1,
           "thermal_relief_gap": 0.5,
           "thermal_relief_spoke_width": 0.5
         }
@@ -258,7 +258,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "2.0"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -799,7 +799,7 @@
         "uuid": "638e80bf-8cd8-4d8e-8f43-50b03db04f94"
       }
     ],
-    "used_designators": "#FLG1-2,J2,J4,R9-16,#PWR19-26,#PWR28-30,#PWR34,#PWR46,D2,L3,C20-28,U2",
+    "used_designators": "#FLG1-2,J2,J4,R9-16,#PWR19-26,#PWR28-30,#PWR34,#PWR46,D2-3,L3,C20-28,U2",
     "variants": []
   },
   "sheets": [

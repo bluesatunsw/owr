@@ -2118,8 +2118,8 @@
 			(on_board yes)
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "J"
-				(at 0 10.16 0)
+			(property "Reference" "J106"
+				(at 0.635 12.7 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -2128,8 +2128,8 @@
 					)
 				)
 			)
-			(property "Value" "Conn_01x08_Pin"
-				(at 0 -12.7 0)
+			(property "Value" "ENC2"
+				(at 0.635 10.16 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -2138,7 +2138,7 @@
 					)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "Connector_JST:JST_PH_B8B-PH-SM4-TB_1x08-1MP_P2.00mm_Vertical"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -2525,6 +2525,25 @@
 						)
 					)
 					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 7.62 180)
+					(length 3.81)
+					(hide yes)
+					(name "EP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "MP"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5333,9 +5352,9 @@
 					(alternate "USART3_RX" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 16.51 180)
+					(at 19.05 13.97 180)
 					(length 2.54)
-					(name "PB12_PWM_H3"
+					(name "PB12_PWM_L3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5367,9 +5386,9 @@
 					(alternate "USART3_CK" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 13.97 180)
+					(at 19.05 16.51 180)
 					(length 2.54)
-					(name "PB13_PWM_L3"
+					(name "PB13_PWM_H3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5467,9 +5486,9 @@
 					(alternate "TIM1_CH3N" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 21.59 180)
+					(at 19.05 19.05 180)
 					(length 2.54)
-					(name "PC6_PWM_H2"
+					(name "PC6_PWM_L2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5492,9 +5511,9 @@
 					(alternate "TIM8_CH1" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 19.05 180)
+					(at 19.05 21.59 180)
 					(length 2.54)
-					(name "PC7_PWM_L2"
+					(name "PC7_PWM_H2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5517,9 +5536,9 @@
 					(alternate "TIM8_CH2" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 26.67 180)
+					(at 19.05 24.13 180)
 					(length 2.54)
-					(name "PC8_PWM_H1"
+					(name "PC8_PWM_L1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5541,9 +5560,9 @@
 					(alternate "TIM8_CH3" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 24.13 180)
+					(at 19.05 26.67 180)
 					(length 2.54)
-					(name "PC9_PWM_L1"
+					(name "PC9_PWM_H1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7198,9 +7217,9 @@
 					(alternate "USART3_RX" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 16.51 180)
+					(at 19.05 13.97 180)
 					(length 2.54)
-					(name "PB12_PWM_H3"
+					(name "PB12_PWM_L3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7232,9 +7251,9 @@
 					(alternate "USART3_CK" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 13.97 180)
+					(at 19.05 16.51 180)
 					(length 2.54)
-					(name "PB13_PWM_L3"
+					(name "PB13_PWM_H3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7332,9 +7351,9 @@
 					(alternate "TIM1_CH3N" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 21.59 180)
+					(at 19.05 19.05 180)
 					(length 2.54)
-					(name "PC6_PWM_H2"
+					(name "PC6_PWM_L2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7357,9 +7376,9 @@
 					(alternate "TIM8_CH1" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 19.05 180)
+					(at 19.05 21.59 180)
 					(length 2.54)
-					(name "PC7_PWM_L2"
+					(name "PC7_PWM_H2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7382,9 +7401,9 @@
 					(alternate "TIM8_CH2" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 26.67 180)
+					(at 19.05 24.13 180)
 					(length 2.54)
-					(name "PC8_PWM_H1"
+					(name "PC8_PWM_L1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7406,9 +7425,9 @@
 					(alternate "TIM8_CH3" bidirectional line)
 				)
 				(pin bidirectional line
-					(at 19.05 24.13 180)
+					(at 19.05 26.67 180)
 					(length 2.54)
-					(name "PC9_PWM_L1"
+					(name "PC9_PWM_H1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -20863,6 +20882,9 @@
 		)
 		(pin "8"
 			(uuid "38cf2a55-d1b4-4269-a536-c276a465343f")
+		)
+		(pin "MP"
+			(uuid "8b7aed23-397e-4b54-b0c6-1e5f37e6355e")
 		)
 		(instances
 			(project "vesc2"

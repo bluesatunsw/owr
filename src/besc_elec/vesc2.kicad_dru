@@ -1,0 +1,5 @@
+(version 1)
+
+(rule "Courtyard to edge"
+  (constraint edge_clearance (min 2mm))
+  (condition "A.Layer == 'F.Courtyard' || A.Layer == 'B.Courtyard'"))

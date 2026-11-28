@@ -13,20 +13,19 @@ services:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
-      # Limit ROS communication to local computer only
-      #- ROS_LOCALHOST_ONLY=1
+      #- ROS_LOCALHOST_ONLY=1 # Limit ROS communication to local computer only
     # Required for communicating over the network
     network_mode: "host"
-    # Required for accessing hardware
+    tty: false 
     privileged: true
-    tty: true
     volumes:
-      # Required for accessing hardware
-      # - /dev:/dev
       - ../:${WORKSPACE_DIR}
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       # Required for ROS 2 shared memory communication
       #- /dev/shm:/dev/shm
+      # otherwise we don't get devs made by UDev! and hotplug doesn't work!!!
+      # we can't do /dev:/dev because /dev/pts is different!
+      - /dev:/host-dev
     userns_mode: "keep-id:uid=1010,gid=1010"    # Make permissions work for rootless podman (L bozo docker)
 
 x-podman:

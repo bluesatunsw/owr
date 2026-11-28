@@ -84,4 +84,4 @@ set -g fish_greeting # Disable fish greeting!
 EOT
 
 WORKDIR $WORKSPACE_DIR
-CMD ["/bin/bash"]
+CMD sleep infinity 

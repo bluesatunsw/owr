@@ -61,6 +61,26 @@ For the stepper motor, subject-IDs for drive commands are in the form `30xy`:
 A message with subject-ID 3020, for example, is a drive command targeting the
 back-left stepper motor.
 
+## Runtime diagnostics
+
+The node's `GetInfo` response includes the first 64 bits of the firmware's Git
+revision. `0` means the revision could not be determined during the build.
+The same revision is included in semihosting panic output. The revision
+identifies the commit, not uncommitted working-tree changes.
+
+The node reports the first runtime firmware error as an advisory health status
+with one of these vendor status codes:
+
+- `0xF0`: invalid steering setpoint
+- `0xF1`: stepper SPI failure
+- `0xF2`: CAN receive failure
+- `0xF3`: CAN transmit/publish failure
+- `0xF4`: invalid execute-command request
+
+These codes remain set until reboot so transient failures remain visible in
+subsequent heartbeats. Stepper health is polled every 100 ms rather than on
+every main-loop iteration.
+
 ## A historical note
 
 This firmware formerly had provisions for being flashed to multiple different

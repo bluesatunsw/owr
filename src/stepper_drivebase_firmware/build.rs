@@ -4,14 +4,38 @@
 //! The build script also sets the linker flags to tell it which link script to use.
 
 use std::env;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write;
 use std::path::PathBuf;
+use std::process::Command;
 
 fn main() {
+    let revision = Command::new("git")
+        .args(["rev-parse", "--verify", "HEAD"])
+        .output()
+        .ok()
+        .filter(|output| output.status.success())
+        .and_then(|output| String::from_utf8(output.stdout).ok())
+        .map(|revision| revision.trim().to_owned())
+        .filter(|revision| revision.len() >= 16)
+        .unwrap_or_else(|| "0000000000000000".to_owned());
+    let revision_id = u64::from_str_radix(&revision[..16], 16).unwrap_or(0);
+
+    let out = PathBuf::from(env::var_os("OUT_DIR").unwrap());
+    fs::write(
+        out.join("build_info.rs"),
+        format!(
+            "pub const BUILD_REVISION_ID: u64 = {revision_id};\n\
+             pub const BUILD_REVISION: &str = \"{}\";\n",
+            &revision[..16]
+        ),
+    )
+    .unwrap();
+    println!("cargo:rerun-if-changed=../../.git/HEAD");
+    println!("cargo:rerun-if-changed=../../.git/index");
+
     // Put the appropriate `memory.x` in our output directory and ensure it's
     // on the linker search path.
-    let out = &PathBuf::from(env::var_os("OUT_DIR").unwrap());
     let mut f = File::create(out.join("memory.x")).unwrap();
 
     f.write_all(include_bytes!("linker/memory_stm32g474.x"))

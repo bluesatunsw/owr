@@ -66,9 +66,18 @@ const CYPHAL_NUM_SERVICES: usize = 8;
 
 const HEARTBEAT_PERIOD_US: u32 = 1_000_000;
 const TELEM_PERIOD_US: u32 = 50_000;
+const STEPPER_HEALTH_PERIOD_US: u32 = 100_000;
 const TID_TIMEOUT_US: u32 = 100_000;
 
 const ENABLE_TELEM: bool = false;
+
+const STATUS_INVALID_SETPOINT: u8 = 0xF0;
+const STATUS_STEPPER_SPI_ERROR: u8 = 0xF1;
+const STATUS_CAN_RECEIVE_ERROR: u8 = 0xF2;
+const STATUS_CAN_TRANSMIT_ERROR: u8 = 0xF3;
+const STATUS_INVALID_REQUEST: u8 = 0xF4;
+
+include!(concat!(env!("OUT_DIR"), "/build_info.rs"));
 
 // Cyphal message-IDs -- as per README
 const SETPOINT_MESSAGE_CHAN_0_ID: SubjectId = SubjectId::from_truncating(3000);
@@ -88,7 +97,7 @@ const DEFAULT_BRIGHTNESS: u8 = 15;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-    hprintln!("{}", _info.message());
+    hprintln!("{} (firmware revision {})", _info.message(), BUILD_REVISION);
     breakpoint();
     loop {}
 }
@@ -245,7 +254,7 @@ fn main() -> ! {
             // system in the future.
             hardware_version: Version { major: 1, minor: 1 },
             software_version: Version { major: 1, minor: 0 },
-            software_vcs_revision_id: 0,
+            software_vcs_revision_id: BUILD_REVISION_ID,
             unique_id: [
                 // TODO: Replace this with the ID fetched from the chip
                 0xFF, 0x55, 0x13, 0x31, 0x42, 0x69, 0x2A, 0xEE, 0x78, 0x12, 0x99, 0x10, 0x00, 0x03,
@@ -302,33 +311,55 @@ fn main() -> ! {
     }
 
     drivebase.steppers.enable_all();
-    let mut comms_handler = CommsHandler { drivebase };
+    let mut comms_handler = CommsHandler {
+        drivebase,
+        diagnostic_status: None,
+    };
 
     let mut tim_heartbeat = node.clock().now_const();
     let mut tim_telem = node.clock().now_const();
+    let mut tim_stepper_health = node.clock().now_const();
 
     let mut tim_argb = node.clock().now_const();
     let mut argb_phase = false;
 
     loop {
-        node.receive(&mut comms_handler).unwrap();
+        if node.receive(&mut comms_handler).is_err() {
+            comms_handler.record_error(STATUS_CAN_RECEIVE_ERROR);
+        }
 
-        if let Some(status) = comms_handler.drivebase.steppers.health() {
+        if node
+            .clock()
+            .advance_if_elapsed(&mut tim_stepper_health, STEPPER_HEALTH_PERIOD_US.micros())
+        {
+            match comms_handler.drivebase.steppers.health() {
+                Ok(Some(status)) => {
+                    node.set_health(Health {
+                        value: Health::ADVISORY,
+                    });
+                    node.set_status_code(status);
+                }
+                Ok(None) => node.set_health(Health {
+                    value: Health::NOMINAL,
+                }),
+                Err(_) => comms_handler.record_error(STATUS_STEPPER_SPI_ERROR),
+            }
+        }
+
+        if let Some(status) = comms_handler.diagnostic_status {
             node.set_health(Health {
                 value: Health::ADVISORY,
             });
             node.set_status_code(status);
-        } else {
-            node.set_health(Health {
-                value: Health::NOMINAL,
-            });
         }
 
         if node
             .clock()
             .advance_if_elapsed(&mut tim_heartbeat, HEARTBEAT_PERIOD_US.micros())
         {
-            node.run_per_second_tasks().unwrap();
+            if node.run_per_second_tasks().is_err() {
+                comms_handler.record_error(STATUS_CAN_TRANSMIT_ERROR);
+            }
         }
 
         if ENABLE_TELEM
@@ -336,53 +367,24 @@ fn main() -> ! {
                 .clock()
                 .advance_if_elapsed(&mut tim_telem, TELEM_PERIOD_US.micros())
         {
-            node.publish(
-                POSITION_MESSAGE_CHAN_0_ID,
-                &angle::scalar_1_0::Scalar {
-                    radian: comms_handler
-                        .drivebase
-                        .get_position(Channel::CH0)
-                        .unwrap()
-                        .0,
-                },
-            )
-            .unwrap();
-
-            node.publish(
-                POSITION_MESSAGE_CHAN_1_ID,
-                &angle::scalar_1_0::Scalar {
-                    radian: comms_handler
-                        .drivebase
-                        .get_position(Channel::CH1)
-                        .unwrap()
-                        .0,
-                },
-            )
-            .unwrap();
-
-            node.publish(
-                POSITION_MESSAGE_CHAN_2_ID,
-                &angle::scalar_1_0::Scalar {
-                    radian: comms_handler
-                        .drivebase
-                        .get_position(Channel::CH2)
-                        .unwrap()
-                        .0,
-                },
-            )
-            .unwrap();
-
-            node.publish(
-                POSITION_MESSAGE_CHAN_3_ID,
-                &angle::scalar_1_0::Scalar {
-                    radian: comms_handler
-                        .drivebase
-                        .get_position(Channel::CH3)
-                        .unwrap()
-                        .0,
-                },
-            )
-            .unwrap();
+            for (subject, channel) in [
+                (POSITION_MESSAGE_CHAN_0_ID, Channel::CH0),
+                (POSITION_MESSAGE_CHAN_1_ID, Channel::CH1),
+                (POSITION_MESSAGE_CHAN_2_ID, Channel::CH2),
+                (POSITION_MESSAGE_CHAN_3_ID, Channel::CH3),
+            ] {
+                match comms_handler.drivebase.get_position(channel) {
+                    Ok(position) => {
+                        if node
+                            .publish(subject, &angle::scalar_1_0::Scalar { radian: position.0 })
+                            .is_err()
+                        {
+                            comms_handler.record_error(STATUS_CAN_TRANSMIT_ERROR);
+                        }
+                    }
+                    Err(_) => comms_handler.record_error(STATUS_STEPPER_SPI_ERROR),
+                }
+            }
         }
 
         // blink the ARGB LEDs
@@ -402,6 +404,15 @@ fn main() -> ! {
 
 struct CommsHandler {
     pub drivebase: Drivebase,
+    diagnostic_status: Option<u8>,
+}
+
+impl CommsHandler {
+    fn record_error(&mut self, status: u8) {
+        if self.diagnostic_status.is_none() {
+            self.diagnostic_status = Some(status);
+        }
+    }
 }
 
 impl<T: Transport> TransferHandler<T> for CommsHandler {
@@ -418,10 +429,20 @@ impl<T: Transport> TransferHandler<T> for CommsHandler {
             _ => None,
         };
         if let Some(chan) = op {
-            let msg = Planar::deserialize_from_bytes(&transfer.payload);
-            self.drivebase
-                .set_position(chan, TmcPosition(msg.unwrap().angular_position.radian))
-                .unwrap();
+            let msg = match Planar::deserialize_from_bytes(&transfer.payload) {
+                Ok(msg) => msg,
+                Err(_) => {
+                    self.record_error(STATUS_INVALID_SETPOINT);
+                    return true;
+                }
+            };
+            if self
+                .drivebase
+                .set_position(chan, TmcPosition(msg.angular_position.radian))
+                .is_err()
+            {
+                self.record_error(STATUS_STEPPER_SPI_ERROR);
+            }
             true
         } else {
             false
@@ -438,8 +459,26 @@ impl<T: Transport> TransferHandler<T> for CommsHandler {
             return false;
         }
 
-        let req =
-            ExecuteCommandRequest::deserialize_from_bytes(transfer.payload.as_slice()).unwrap();
+        let req = match ExecuteCommandRequest::deserialize_from_bytes(transfer.payload.as_slice()) {
+            Ok(req) => req,
+            Err(_) => {
+                self.record_error(STATUS_INVALID_REQUEST);
+                if node
+                    .send_response(
+                        token,
+                        1000.millis(),
+                        &ExecuteCommandResponse {
+                            status: ExecuteCommandResponse::STATUS_BAD_COMMAND,
+                            output: Vec::new(),
+                        },
+                    )
+                    .is_err()
+                {
+                    self.record_error(STATUS_CAN_TRANSMIT_ERROR);
+                }
+                return true;
+            }
+        };
         match req.command {
             ExecuteCommandRequest::COMMAND_RESTART => {
                 unsafe {
@@ -452,15 +491,19 @@ impl<T: Transport> TransferHandler<T> for CommsHandler {
                 unsafe { unreachable_unchecked() }
             }
             _ => {
-                node.send_response(
-                    token,
-                    1000.millis(),
-                    &ExecuteCommandResponse {
-                        status: ExecuteCommandResponse::STATUS_BAD_COMMAND,
-                        output: Vec::new(),
-                    },
-                )
-                .unwrap();
+                if node
+                    .send_response(
+                        token,
+                        1000.millis(),
+                        &ExecuteCommandResponse {
+                            status: ExecuteCommandResponse::STATUS_BAD_COMMAND,
+                            output: Vec::new(),
+                        },
+                    )
+                    .is_err()
+                {
+                    self.record_error(STATUS_CAN_TRANSMIT_ERROR);
+                }
             }
         }
 

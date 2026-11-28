@@ -159,22 +159,25 @@ impl Drivebase {
     }
     */
 
-    pub fn set_position(&mut self, channel: Channel, target: TmcPosition) -> Result<(), ()> {
+    pub fn set_position(
+        &mut self,
+        channel: Channel,
+        target: TmcPosition,
+    ) -> Result<(), hal::spi::Error> {
         self.steppers
-            .write_reg(channel, XTarget(target * GEAR_RATIO))
-            .unwrap();
+            .write_reg(channel, XTarget(target * GEAR_RATIO))?;
         Ok(())
     }
 
-    pub fn get_position(&mut self, channel: Channel) -> Result<TmcPosition, ()> {
-        Ok(self.steppers.read_reg::<XActual>(channel).unwrap().1 .0 / GEAR_RATIO)
+    pub fn get_position(&mut self, channel: Channel) -> Result<TmcPosition, hal::spi::Error> {
+        Ok(self.steppers.read_reg::<XActual>(channel)?.1 .0 / GEAR_RATIO)
     }
 
     /// Returns true if the motor is currently actuating, which is determined by comparing the
     /// TMC5160's ramp profiler target position with its current position.
     #[allow(unused)]
-    pub fn is_busy(&mut self, channel: Channel) -> Result<bool, !> {
-        Ok(self.steppers.read_reg::<XTarget>(channel).unwrap().1 .0
-            != self.steppers.read_reg::<XActual>(channel).unwrap().1 .0)
+    pub fn is_busy(&mut self, channel: Channel) -> Result<bool, hal::spi::Error> {
+        Ok(self.steppers.read_reg::<XTarget>(channel)?.1 .0
+            != self.steppers.read_reg::<XActual>(channel)?.1 .0)
     }
 }

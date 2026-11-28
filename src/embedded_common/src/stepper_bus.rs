@@ -194,17 +194,17 @@ impl StepperBus {
         });
     }
 
-    pub fn health(&mut self) -> Option<u8> {
+    pub fn health(&mut self) -> Result<Option<u8>, spi::Error> {
         let mut health = None;
         for (&chan, prefix) in ALL_CHANNELS.iter().zip([0, 10, 20, 30]) {
-            let (_, gstat) = self.read_reg::<GStat>(chan).unwrap();
+            let (_, gstat) = self.read_reg::<GStat>(chan)?;
             Self::append_health(&mut health, gstat.reset(), prefix + 0);
             Self::append_health(&mut health, gstat.uv_cp(), prefix + 1);
             if !gstat.drv_err() {
                 continue;
             }
 
-            let (_, dstat) = self.read_reg::<DrvStatus>(chan).unwrap();
+            let (_, dstat) = self.read_reg::<DrvStatus>(chan)?;
             Self::append_health(&mut health, dstat.ot(), prefix + 2);
             Self::append_health(&mut health, dstat.otpw(), prefix + 3);
 
@@ -217,6 +217,6 @@ impl StepperBus {
             Self::append_health(&mut health, dstat.olb(), prefix + 9);
         }
 
-        health
+        Ok(health)
     }
 }

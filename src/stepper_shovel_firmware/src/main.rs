@@ -254,15 +254,22 @@ fn main() -> ! {
     loop {
         node.receive(&mut comms_handler).unwrap();
 
-        if let Some(status) = comms_handler.motion.steppers.health() {
-            node.set_health(Health {
-                value: Health::ADVISORY,
-            });
-            node.set_status_code(status);
-        } else {
-            node.set_health(Health {
+        match comms_handler.motion.steppers.health() {
+            Ok(Some(status)) => {
+                node.set_health(Health {
+                    value: Health::ADVISORY,
+                });
+                node.set_status_code(status);
+            }
+            Ok(None) => node.set_health(Health {
                 value: Health::NOMINAL,
-            });
+            }),
+            Err(_) => {
+                node.set_health(Health {
+                    value: Health::ADVISORY,
+                });
+                node.set_status_code(0xF1);
+            }
         }
 
         if node
